@@ -62,12 +62,11 @@ def create_app(config_name=None):
     app.register_blueprint(admin_bp)
     app.register_blueprint(chat_bp)
     
-    # Public endpoints
-   # Public endpoints - ADD admin.login HERE
-PUBLIC_ENDPOINTS = {
-    'index', 'about', 'contact', 'auth.login', 'auth.register', 
-    'auth.logout', 'static', 'api_verify_account', 'health', 'admin.login'
-}
+    # Public endpoints - FIXED: Added admin.login
+    PUBLIC_ENDPOINTS = {
+        'index', 'about', 'contact', 'auth.login', 'auth.register', 
+        'auth.logout', 'static', 'api_verify_account', 'health', 'admin.login'
+    }
     
     @app.before_request
     def require_auth():
