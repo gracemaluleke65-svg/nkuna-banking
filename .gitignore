@@ -1,0 +1,29 @@
+# Flask Configuration
+SECRET_KEY=your-secret-key-here-change-in-production
+FLASK_ENV=production
+DATABASE_URL=postgresql://username:password@localhost/nkunabank
+
+# Application Settings
+DEBUG=False
+UNDO_MINUTES=15
+MAX_DEPOSIT=50000
+MIN_DEPOSIT=10
+TRANSFER_FEE_PERCENT=1.0
+MIN_TRANSFER_FEE=5.0
+MAX_TRANSFER_FEE=50.0
+UTILITY_FEE_FIXED=5.0
+
+# Admin Credentials (for initial setup)
+ADMIN_EMAIL=admin@nkunabank.co.za
+ADMIN_PASSWORD=admin123
+
+# Email Configuration (Gmail SMTP) - USING YOUR APP PASSWORD
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USE_TLS=True
+MAIL_USERNAME=shichabonkuna22@gmail.com
+MAIL_PASSWORD=dqlb vnee uomu ztei
+MAIL_DEFAULT_SENDER=shichabonkuna22@gmail.com
+
+# Chat Configuration
+CHAT_HISTORY_LIMIT=50

@@ -1,0 +1,734 @@
+{% extends "base.html" %}
+
+{% block title %}Transaction History - Nkuna Banking{% endblock %}
+
+{% block head %}
+<style>
+    .history-section {
+        padding: 30px 0;
+    }
+    
+    .page-header {
+        margin-bottom: 40px;
+    }
+    
+    .page-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+    }
+    
+    .page-subtitle {
+        color: #718096;
+        font-size: 1.1rem;
+        max-width: 600px;
+    }
+    
+    .transaction-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border-left: 4px solid #0066CC;
+        transition: all 0.3s ease;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .transaction-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        border-color: #0066CC;
+    }
+    
+    .transaction-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 15px;
+    }
+    
+    .transaction-type-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .transaction-amount {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 1.3rem;
+    }
+    
+    .transaction-positive {
+        color: #27ae60;
+    }
+    
+    .transaction-negative {
+        color: #e74c3c;
+    }
+    
+    .transaction-neutral {
+        color: #7f8c8d;
+    }
+    
+    .filters-card {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 16px;
+        padding: 25px;
+        color: white;
+        margin-bottom: 30px;
+    }
+    
+    .stats-number {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 5px;
+    }
+    
+    .stats-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    
+    .empty-state-icon {
+        font-size: 4rem;
+        color: #cbd5e0;
+        margin-bottom: 20px;
+    }
+    
+    .pagination-container {
+        margin-top: 40px;
+    }
+    
+    .page-link {
+        border-radius: 10px !important;
+        margin: 0 5px;
+        border: 1px solid #e2e8f0;
+        color: #4a5568;
+        font-weight: 500;
+        min-width: 40px;
+        text-align: center;
+    }
+    
+    .page-item.active .page-link {
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);
+        border-color: #0066CC;
+    }
+    
+    .undo-btn {
+        background: linear-gradient(135deg, #FF6B6B 0%, #EE5A24 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .undo-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        color: white;
+    }
+    
+    .undo-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+    
+    .mobile-transaction-card {
+        display: none;
+    }
+    
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .desktop-transaction-table {
+            display: none;
+        }
+        
+        .mobile-transaction-card {
+            display: block;
+        }
+        
+        .transaction-card {
+            padding: 15px;
+        }
+        
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+        
+        .transaction-amount {
+            font-size: 1.1rem;
+        }
+        
+        .filters-card {
+            padding: 20px;
+        }
+    }
+    
+    .loading-skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: 8px;
+    }
+    
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+    
+    .date-input {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 10px 15px;
+        font-size: 0.95rem;
+        width: 100%;
+    }
+    
+    .date-input:focus {
+        border-color: #0066CC;
+        outline: none;
+    }
+    
+    .status-completed {
+        background: rgba(39, 174, 96, 0.1);
+        color: #27ae60;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+    
+    .status-reversed {
+        background: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Safety Reminder -->
+<div class="container mt-4">
+    <div class="alert alert-warning glass-card border-0">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-shield-alt me-3 fa-lg" style="color: #E17055;"></i>
+            <div>
+                <strong>Transaction History:</strong> This shows all your transaction activity in the demo banking system. 
+                No real money is involved. You can undo transactions within 15 minutes of making them.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Page Header -->
+<section class="history-section">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Transaction History</h1>
+            <p class="page-subtitle">View all your deposits, transfers, utility payments, and goal transactions in one place. Track your financial activity with our detailed transaction records.</p>
+        </div>
+        
+        <!-- Stats Overview -->
+        <div class="row mb-4">
+            <div class="col-md-3 col-6 mb-3">
+                <div class="stats-card">
+                    <div class="stats-number">{{ transactions.total }}</div>
+                    <div class="stats-label">Total Transactions</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-3">
+                <div class="stats-card" style="background: linear-gradient(135deg, #00D4AA 0%, #009688 100%);">
+                    <div class="stats-number">
+                        {% set deposits = transactions.items|selectattr('transaction_type', 'equalto', 'deposit')|list|length %}
+                        {{ deposits }}
+                    </div>
+                    <div class="stats-label">Deposits</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-3">
+                <div class="stats-card" style="background: linear-gradient(135deg, #FF6B6B 0%, #EE5A24 100%);">
+                    <div class="stats-number">
+                        {% set transfers = transactions.items|selectattr('transaction_type', 'equalto', 'transfer')|list|length %}
+                        {{ transfers }}
+                    </div>
+                    <div class="stats-label">Transfers</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-3">
+                <div class="stats-card" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);">
+                    <div class="stats-number">
+                        {% set utilities = transactions.items|selectattr('transaction_type', 'equalto', 'utility')|list|length %}
+                        {{ utilities }}
+                    </div>
+                    <div class="stats-label">Utility Payments</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filters Card -->
+        <div class="filters-card">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="mb-3">Filter Transactions</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <input type="date" class="date-input" id="startDate" placeholder="Start Date">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="date" class="date-input" id="endDate" placeholder="End Date">
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" style="border-radius: 10px; padding: 10px 15px; border: 2px solid #e2e8f0;">
+                                <option value="">All Types</option>
+                                <option value="deposit">Deposits</option>
+                                <option value="transfer">Transfers</option>
+                                <option value="utility">Utility Payments</option>
+                                <option value="goal_deposit">Goal Deposits</option>
+                                <option value="goal_withdrawal">Goal Withdrawals</option>
+                                <option value="reversal">Reversals</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <button class="btn-gradient-primary" onclick="applyFilters()">
+                        <i class="fas fa-filter me-2"></i> Apply Filters
+                    </button>
+                    <button class="btn btn-outline-secondary ms-2" style="border-radius: 10px;" onclick="resetFilters()">
+                        <i class="fas fa-redo me-2"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Transactions Table (Desktop) -->
+        {% if transactions.items %}
+        <div class="desktop-transaction-table">
+            <div class="table-responsive">
+                <table class="table table-hover" style="border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0;">
+                    <thead style="background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);">
+                        <tr>
+                            <th style="padding: 15px; border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #4a5568;">Date & Time</th>
+                            <th style="padding: 15px; border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #4a5568;">Type</th>
+                            <th style="padding: 15px; border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #4a5568;">Description</th>
+                            <th style="padding: 15px; border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #4a5568; text-align: right;">Amount</th>
+                            <th style="padding: 15px; border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #4a5568; text-align: right;">Fee</th>
+                            <th style="padding: 15px; border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #4a5568;">Status</th>
+                            <th style="padding: 15px; border-bottom: 2px solid #e2e8f0; font-weight: 600; color: #4a5568;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in transactions.items %}
+                        <tr style="border-bottom: 1px solid #e2e8f0; transition: background-color 0.3s ease;">
+                            <td style="padding: 15px; vertical-align: middle;">
+                                <div class="fw-semibold">{{ format_datetime(transaction.created_at, include_time=True) }}</div>
+                                <!-- FIXED: Use strftime instead of datetimeformat filter -->
+                                <small class="text-muted">{{ transaction.created_at.strftime('%A') }}</small>
+                            </td>
+                            <td style="padding: 15px; vertical-align: middle;">
+                                <div class="d-flex align-items-center">
+                                    <div class="transaction-icon" style="
+                                        {% if transaction.transaction_type == 'deposit' %}background: linear-gradient(135deg, #27ae60 0%, #219653 100%); color: white;
+                                        {% elif transaction.transaction_type == 'transfer' and transaction.is_sender %}background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white;
+                                        {% elif transaction.transaction_type == 'transfer' and not transaction.is_sender %}background: linear-gradient(135deg, #27ae60 0%, #219653 100%); color: white;
+                                        {% elif transaction.transaction_type == 'utility' %}background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white;
+                                        {% elif transaction.transaction_type == 'goal_deposit' %}background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white;
+                                        {% elif transaction.transaction_type == 'goal_withdrawal' %}background: linear-gradient(135deg, #27ae60 0%, #219653 100%); color: white;
+                                        {% elif transaction.transaction_type == 'reversal' %}background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%); color: white;
+                                        {% else %}background: linear-gradient(135deg, #f39c12 0%, #d35400 100%); color: white;{% endif %}">
+                                        {% if transaction.transaction_type == 'deposit' %}<i class="fas fa-arrow-down"></i>
+                                        {% elif transaction.transaction_type == 'transfer' and transaction.is_sender %}<i class="fas fa-share"></i>
+                                        {% elif transaction.transaction_type == 'transfer' and not transaction.is_sender %}<i class="fas fa-arrow-down"></i>
+                                        {% elif transaction.transaction_type == 'utility' %}<i class="fas fa-bolt"></i>
+                                        {% elif transaction.transaction_type == 'goal_deposit' %}<i class="fas fa-piggy-bank"></i>
+                                        {% elif transaction.transaction_type == 'goal_withdrawal' %}<i class="fas fa-coins"></i>
+                                        {% elif transaction.transaction_type == 'reversal' %}<i class="fas fa-undo"></i>
+                                        {% else %}<i class="fas fa-exchange-alt"></i>{% endif %}
+                                    </div>
+                                    <div>
+                                        <span class="transaction-type-badge" style="
+                                            {% if transaction.transaction_type == 'deposit' %}background: rgba(39, 174, 96, 0.1); color: #27ae60;
+                                            {% elif transaction.transaction_type == 'transfer' and transaction.is_sender %}background: rgba(231, 76, 60, 0.1); color: #e74c3c;
+                                            {% elif transaction.transaction_type == 'transfer' and not transaction.is_sender %}background: rgba(39, 174, 96, 0.1); color: #27ae60;
+                                            {% elif transaction.transaction_type == 'utility' %}background: rgba(155, 89, 182, 0.1); color: #9b59b6;
+                                            {% elif transaction.transaction_type == 'goal_deposit' %}background: rgba(52, 152, 219, 0.1); color: #3498db;
+                                            {% elif transaction.transaction_type == 'goal_withdrawal' %}background: rgba(39, 174, 96, 0.1); color: #27ae60;
+                                            {% elif transaction.transaction_type == 'reversal' %}background: rgba(149, 165, 166, 0.1); color: #95a5a6;
+                                            {% else %}background: rgba(243, 156, 18, 0.1); color: #f39c12;{% endif %}">
+                                            {% if transaction.transaction_type == 'deposit' %}Deposit
+                                            {% elif transaction.transaction_type == 'transfer' and transaction.is_sender %}Transfer Out
+                                            {% elif transaction.transaction_type == 'transfer' and not transaction.is_sender %}Transfer In
+                                            {% elif transaction.transaction_type == 'utility' %}Utility
+                                            {% elif transaction.transaction_type == 'goal_deposit' %}Goal Deposit
+                                            {% elif transaction.transaction_type == 'goal_withdrawal' %}Goal Withdrawal
+                                            {% elif transaction.transaction_type == 'reversal' %}Reversal
+                                            {% else %}{{ transaction.transaction_type|title }}{% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding: 15px; vertical-align: middle;">
+                                <div class="fw-semibold">{{ transaction.get_description() }}</div>
+                                {% if transaction.transaction_type == 'transfer' and transaction.sender_name %}
+                                    {% if transaction.is_sender %}
+                                        <small class="text-muted">
+                                            To: {{ transaction.recipient_name }} ({{ transaction.recipient_account_number }})
+                                        </small>
+                                    {% else %}
+                                        <small class="text-muted">
+                                            From: {{ transaction.sender_name }} ({{ transaction.sender_account_number }})
+                                        </small>
+                                    {% endif %}
+                                {% endif %}
+                                {% if transaction.reference %}
+                                    <br><small class="text-muted">Ref: {{ transaction.reference }}</small>
+                                {% endif %}
+                            </td>
+                            <td style="padding: 15px; vertical-align: middle; text-align: right;">
+                                <div class="transaction-amount {% if transaction.is_incoming() %}transaction-positive{% else %}transaction-negative{% endif %}">
+                                    {{ transaction.get_amount_display() }}
+                                </div>
+                            </td>
+                            <td style="padding: 15px; vertical-align: middle; text-align: right;">
+                                {% if transaction.admin_fee > 0 %}
+                                    <span class="text-muted">{{ format_currency(transaction.admin_fee) }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td style="padding: 15px; vertical-align: middle;">
+                                {% if transaction.status == 'reversed' %}
+                                    <span class="status-reversed">
+                                        <i class="fas fa-ban me-1"></i> Reversed
+                                    </span>
+                                {% else %}
+                                    <span class="status-completed">
+                                        <i class="fas fa-check-circle me-1"></i> Completed
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td style="padding: 15px; vertical-align: middle;">
+                                {% if transaction.can_be_undone() %}
+                                    <form method="POST" action="{{ url_for('user.undo_transaction_route', transaction_id=transaction.id) }}" 
+                                          class="d-inline">
+                                        <button type="submit" class="undo-btn" 
+                                                onclick="return confirmUndoTransaction('{{ transaction.get_description() }}', '{{ format_currency(transaction.amount) }}')">
+                                            <i class="fas fa-undo"></i> Undo
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-muted" style="font-size: 0.9rem;">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Mobile Transactions View -->
+        <div class="mobile-transaction-card">
+            {% for transaction in transactions.items %}
+            <div class="transaction-card">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="transaction-icon" style="
+                            {% if transaction.transaction_type == 'deposit' %}background: linear-gradient(135deg, #27ae60 0%, #219653 100%); color: white;
+                            {% elif transaction.transaction_type == 'transfer' and transaction.is_sender %}background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white;
+                            {% elif transaction.transaction_type == 'transfer' and not transaction.is_sender %}background: linear-gradient(135deg, #27ae60 0%, #219653 100%); color: white;
+                            {% elif transaction.transaction_type == 'utility' %}background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white;
+                            {% elif transaction.transaction_type == 'goal_deposit' %}background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white;
+                            {% elif transaction.transaction_type == 'goal_withdrawal' %}background: linear-gradient(135deg, #27ae60 0%, #219653 100%); color: white;
+                            {% elif transaction.transaction_type == 'reversal' %}background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%); color: white;
+                            {% else %}background: linear-gradient(135deg, #f39c12 0%, #d35400 100%); color: white;{% endif %}">
+                            {% if transaction.transaction_type == 'deposit' %}<i class="fas fa-arrow-down"></i>
+                            {% elif transaction.transaction_type == 'transfer' and transaction.is_sender %}<i class="fas fa-share"></i>
+                            {% elif transaction.transaction_type == 'transfer' and not transaction.is_sender %}<i class="fas fa-arrow-down"></i>
+                            {% elif transaction.transaction_type == 'utility' %}<i class="fas fa-bolt"></i>
+                            {% elif transaction.transaction_type == 'goal_deposit' %}<i class="fas fa-piggy-bank"></i>
+                            {% elif transaction.transaction_type == 'goal_withdrawal' %}<i class="fas fa-coins"></i>
+                            {% elif transaction.transaction_type == 'reversal' %}<i class="fas fa-undo"></i>
+                            {% else %}<i class="fas fa-exchange-alt"></i>{% endif %}
+                        </div>
+                        <div>
+                            <div class="fw-semibold">{{ transaction.get_description()|truncate(30) }}</div>
+                            <small class="text-muted">{{ format_datetime(transaction.created_at, include_time=True) }}</small>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="transaction-amount {% if transaction.is_incoming() %}transaction-positive{% else %}transaction-negative{% endif %} mb-2">
+                            {{ transaction.get_amount_display() }}
+                        </div>
+                        {% if transaction.status == 'reversed' %}
+                            <span class="status-reversed">
+                                <i class="fas fa-ban me-1"></i> Reversed
+                            </span>
+                        {% else %}
+                            <span class="status-completed">
+                                <i class="fas fa-check-circle me-1"></i> Completed
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                        <span class="transaction-type-badge" style="
+                            {% if transaction.transaction_type == 'deposit' %}background: rgba(39, 174, 96, 0.1); color: #27ae60;
+                            {% elif transaction.transaction_type == 'transfer' and transaction.is_sender %}background: rgba(231, 76, 60, 0.1); color: #e74c3c;
+                            {% elif transaction.transaction_type == 'transfer' and not transaction.is_sender %}background: rgba(39, 174, 96, 0.1); color: #27ae60;
+                            {% elif transaction.transaction_type == 'utility' %}background: rgba(155, 89, 182, 0.1); color: #9b59b6;
+                            {% elif transaction.transaction_type == 'goal_deposit' %}background: rgba(52, 152, 219, 0.1); color: #3498db;
+                            {% elif transaction.transaction_type == 'goal_withdrawal' %}background: rgba(39, 174, 96, 0.1); color: #27ae60;
+                            {% elif transaction.transaction_type == 'reversal' %}background: rgba(149, 165, 166, 0.1); color: #95a5a6;
+                            {% else %}background: rgba(243, 156, 18, 0.1); color: #f39c12;{% endif %}">
+                            {% if transaction.transaction_type == 'deposit' %}Deposit
+                            {% elif transaction.transaction_type == 'transfer' and transaction.is_sender %}Transfer Out
+                            {% elif transaction.transaction_type == 'transfer' and not transaction.is_sender %}Transfer In
+                            {% elif transaction.transaction_type == 'utility' %}Utility
+                            {% elif transaction.transaction_type == 'goal_deposit' %}Goal Deposit
+                            {% elif transaction.transaction_type == 'goal_withdrawal' %}Goal Withdrawal
+                            {% elif transaction.transaction_type == 'reversal' %}Reversal
+                            {% else %}{{ transaction.transaction_type|title }}{% endif %}
+                        </span>
+                    </div>
+                    
+                    {% if transaction.can_be_undone() %}
+                        <form method="POST" action="{{ url_for('user.undo_transaction_route', transaction_id=transaction.id) }}" 
+                              class="d-inline">
+                            <button type="submit" class="undo-btn" 
+                                    onclick="return confirmUndoTransaction('{{ transaction.get_description() }}', '{{ format_currency(transaction.amount) }}')">
+                                <i class="fas fa-undo"></i> Undo
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+                
+                {% if transaction.transaction_type == 'transfer' and transaction.sender_name %}
+                    <div class="mt-3 pt-3 border-top">
+                        <small class="text-muted">
+                            {% if transaction.is_sender %}
+                                To: {{ transaction.recipient_name }} ({{ transaction.recipient_account_number }})
+                            {% else %}
+                                From: {{ transaction.sender_name }} ({{ transaction.sender_account_number }})
+                            {% endif %}
+                        </small>
+                    </div>
+                {% endif %}
+                
+                {% if transaction.admin_fee > 0 %}
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            <i class="fas fa-percentage me-1"></i> Fee: {{ format_currency(transaction.admin_fee) }}
+                        </small>
+                    </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if transactions.pages > 1 %}
+        <div class="pagination-container">
+            <nav aria-label="Transaction history pagination">
+                <ul class="pagination justify-content-center">
+                    {% if transactions.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('user.history', page=transactions.prev_num) }}">
+                                <i class="fas fa-chevron-left me-1"></i> Previous
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                <i class="fas fa-chevron-left me-1"></i> Previous
+                            </span>
+                        </li>
+                    {% endif %}
+                    
+                    {% for page_num in transactions.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            {% if page_num == transactions.page %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('user.history', page=page_num) }}">
+                                        {{ page_num }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if transactions.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('user.history', page=transactions.next_num) }}">
+                                Next <i class="fas fa-chevron-right ms-1"></i>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Next <i class="fas fa-chevron-right ms-1"></i>
+                            </span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            
+            <div class="text-center mt-3">
+                <small class="text-muted">
+                    Page {{ transactions.page }} of {{ transactions.pages }} • 
+                    Showing {{ transactions.items|length }} of {{ transactions.total }} transactions
+                </small>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-history"></i>
+            </div>
+            <h3 class="text-muted mb-3">No Transactions Yet</h3>
+            <p class="text-muted mb-4">Your transaction history will appear here once you start using your account.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{{ url_for('user.deposit') }}" class="btn-gradient-primary">
+                    <i class="fas fa-money-bill-wave me-2"></i> Make Your First Deposit
+                </a>
+                <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-primary" style="border-radius: 10px;">
+                    <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function confirmUndoTransaction(description, amount) {
+        return confirm(`Are you sure you want to undo this transaction?\n\n${description}\nAmount: ${amount}\n\nYou have 15 minutes from the original transaction time to undo it.`);
+    }
+    
+    function applyFilters() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const typeFilter = document.querySelector('select').value;
+        
+        let url = '{{ url_for("user.history") }}?';
+        const params = [];
+        
+        if (startDate) params.push(`start_date=${startDate}`);
+        if (endDate) params.push(`end_date=${endDate}`);
+        if (typeFilter) params.push(`type=${typeFilter}`);
+        
+        if (params.length > 0) {
+            url += params.join('&');
+            window.location.href = url;
+        } else {
+            window.location.href = '{{ url_for("user.history") }}';
+        }
+    }
+    
+    function resetFilters() {
+        document.getElementById('startDate').value = '';
+        document.getElementById('endDate').value = '';
+        document.querySelector('select').value = '';
+        window.location.href = '{{ url_for("user.history") }}';
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('startDate').max = today;
+        document.getElementById('endDate').max = today;
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const startDate = urlParams.get('start_date');
+        const endDate = urlParams.get('end_date');
+        const type = urlParams.get('type');
+        
+        if (startDate) document.getElementById('startDate').value = startDate;
+        if (endDate) document.getElementById('endDate').value = endDate;
+        if (type) document.querySelector('select').value = type;
+        
+        document.querySelectorAll('.undo-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!confirmUndoTransaction(
+                    this.closest('tr')?.querySelector('.fw-semibold')?.textContent || 
+                    this.closest('.transaction-card')?.querySelector('.fw-semibold')?.textContent,
+                    this.closest('tr')?.querySelector('.transaction-amount')?.textContent ||
+                    this.closest('.transaction-card')?.querySelector('.transaction-amount')?.textContent
+                )) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Processing...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                }, 5000);
+            });
+        });
+    });
+</script>
+{% endblock %}

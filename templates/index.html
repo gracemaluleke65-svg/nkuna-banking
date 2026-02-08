@@ -1,0 +1,835 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Modern Digital Banking | Nkuna Banking{% endblock %}
+
+{% block head %}
+<style>
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .hero-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 3.5rem;
+        line-height: 1.2;
+        background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: rgba(255, 255, 255, 0.9);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    /* FIXED STATS COUNTER - Now visible with dark text */
+    .stats-counter {
+        background: rgba(255, 255, 255, 0.95); /* Solid white background */
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        margin-top: -60px;
+        position: relative;
+        z-index: 3;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .counter-item {
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .counter-number {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%); /* Blue gradient for visibility */
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 5px;
+    }
+    
+    .counter-label {
+        color: #4a5568; /* Dark gray for visibility */
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+    
+    .section-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 50px;
+        position: relative;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--primary-gradient);
+        border-radius: 2px;
+    }
+    
+    .testimonial-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: var(--shadow-medium);
+        position: relative;
+        height: 100%;
+    }
+    
+    .testimonial-quote {
+        font-size: 3rem;
+        color: #e2e8f0;
+        position: absolute;
+        top: 10px;
+        left: 20px;
+    }
+    
+    .testimonial-text {
+        font-style: italic;
+        color: #4a5568;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+    }
+    
+    .testimonial-author-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--secondary-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        margin-right: 15px;
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+        border-radius: 30px;
+        padding: 80px 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        margin: 100px 0;
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .cta-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 2.5rem;
+        color: white;
+        margin-bottom: 20px;
+    }
+    
+    .cta-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto 40px;
+    }
+    
+    /* DEVELOPER SECTION STYLES */
+    .developer-section {
+        background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+        padding: 100px 0;
+        position: relative;
+    }
+    
+    .developer-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--primary-gradient);
+    }
+    
+    .developer-profile-image {
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 8px solid white;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        display: block;
+        margin: 0 auto 30px;
+        transition: all 0.4s ease;
+    }
+    
+    .developer-profile-image:hover {
+        transform: scale(1.03);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+    }
+    
+    .developer-name {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+    }
+    
+    .developer-title {
+        color: #4a5568;
+        font-size: 1.2rem;
+        margin-bottom: 25px;
+        font-weight: 500;
+    }
+    
+    .developer-contact {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        margin-bottom: 25px;
+    }
+    
+    .contact-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        padding: 8px 0;
+    }
+    
+    .contact-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .contact-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #00D4AA 0%, #009688 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    
+    .contact-text {
+        color: #2d3748;
+        font-weight: 500;
+    }
+    
+    .developer-social-links {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .social-link {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .social-link:hover {
+        transform: translateY(-5px);
+        text-decoration: none;
+    }
+    
+    .social-linkedin {
+        background: linear-gradient(135deg, #0077B5 0%, #004471 100%);
+    }
+    
+    .social-portfolio {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .social-email {
+        background: linear-gradient(135deg, #EA4335 0%, #BB001B 100%);
+    }
+    
+    .developer-skills-container {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: var(--shadow-medium);
+        height: 100%;
+    }
+    
+    .skill-category {
+        margin-bottom: 30px;
+    }
+    
+    .skill-category:last-child {
+        margin-bottom: 0;
+    }
+    
+    .skill-category-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #0066CC;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .skill-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .skill-tag {
+        background: rgba(0, 102, 204, 0.1);
+        color: #0066CC;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        border: 1px solid rgba(0, 102, 204, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .skill-tag:hover {
+        background: rgba(0, 102, 204, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 102, 204, 0.1);
+    }
+    
+    .certification-badge {
+        background: linear-gradient(135deg, #27ae60 0%, #219653 100%);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: inline-block;
+        margin-right: 10px;
+    }
+    
+    .developer-summary {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        color: #4a5568;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: rgba(0, 102, 204, 0.05);
+        border-radius: 15px;
+        border-left: 4px solid #0066CC;
+    }
+    
+    .developer-achievements {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-top: 30px;
+    }
+    
+    .achievement-item {
+        text-align: center;
+        padding: 20px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .achievement-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    }
+    
+    .achievement-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        color: #0066CC;
+    }
+    
+    .achievement-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 5px;
+    }
+    
+    .achievement-label {
+        color: #4a5568;
+        font-size: 0.9rem;
+    }
+    
+    .mobile-safety-alert {
+        display: none;
+    }
+    
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .hero-section {
+            padding: 60px 0;
+        }
+        
+        .stats-counter {
+            margin-top: -30px;
+            padding: 20px;
+        }
+        
+        .counter-number {
+            font-size: 2rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+        }
+        
+        .cta-section {
+            padding: 60px 20px;
+            margin: 60px 0;
+        }
+        
+        .cta-title {
+            font-size: 2rem;
+        }
+        
+        .developer-profile-image {
+            width: 220px;
+            height: 220px;
+        }
+        
+        .developer-name {
+            font-size: 2rem;
+        }
+        
+        .developer-achievements {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .mobile-safety-alert {
+            display: block;
+            background: linear-gradient(135deg, #FFEAA7 0%, #FDCB6E 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #E17055;
+            position: relative;
+        }
+        
+        .mobile-safety-alert .close-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #E17055;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .developer-achievements {
+            grid-template-columns: 1fr;
+        }
+        
+        .developer-profile-image {
+            width: 200px;
+            height: 200px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 hero-content">
+                <h1 class="hero-title mb-4">Banking Reimagined for <span style="background: linear-gradient(135deg, #00D4AA 0%, #009688 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Modern Life</span></h1>
+                <p class="hero-subtitle mb-4">Experience secure, intuitive digital banking with our unique 15-minute transaction reversal feature. Built with cutting-edge technology for your peace of mind.</p>
+                <div class="d-flex flex-wrap gap-3 mt-5">
+                    <a href="{{ url_for('auth.register') }}" class="btn-gradient-primary">
+                        <i class="fas fa-user-plus me-2"></i> Open Free Account
+                    </a>
+                    <a href="#features" class="btn btn-outline-light rounded-pill px-4">
+                        <i class="fas fa-play-circle me-2"></i> See Features
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="glass-card p-4 text-center">
+                    <div class="amount-display mb-3">R50,000</div>
+                    <p class="text-muted">Maximum Deposit Limit</p>
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <div class="stat-card border-0">
+                                <i class="fas fa-undo fa-2x mb-3" style="color: #0066CC;"></i>
+                                <h5>15-Minute Undo</h5>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-card border-0">
+                                <i class="fas fa-shield-alt fa-2x mb-3" style="color: #00D4AA;"></i>
+                                <h5>Bank-Level Security</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mobile Safety Alert with close button -->
+<div class="container mobile-safety-alert" id="mobileSafetyAlert">
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle fa-lg me-3" style="color: #E17055;"></i>
+            <div>
+                <strong>SAFETY NOTICE:</strong> This is a <strong>DEMONSTRATION</strong> banking application.
+                <strong class="text-danger">NO REAL MONEY</strong> is involved.
+                You will never be asked for real banking details or cards.
+                <div class="small text-muted mt-1">
+                    <strong>Transfers:</strong> Create <strong>two separate accounts</strong> to simulate
+                    money transfers between different account numbers.
+                </div>
+            </div>
+        </div>
+        <button class="close-btn" onclick="closeMobileSafetyAlert()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+
+<!-- FIXED Stats Counter - Now visible with dark text -->
+
+
+<!-- Features Section -->
+<section id="features" class="py-5 mt-5">
+    <div class="container">
+        <h2 class="section-title">Why Choose Nkuna Banking?</h2>
+        
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="glass-card p-4 h-100 text-center feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-undo"></i>
+                    </div>
+                    <h4 class="mb-3">15-Minute Undo</h4>
+                    <p class="text-muted">Made a mistake? Reverse transactions within 15 minutes. Your safety net for worry-free banking.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="glass-card p-4 h-100 text-center feature-card">
+                    <div class="feature-icon-wrapper" style="background: var(--secondary-gradient);">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h4 class="mb-3">Military-Grade Security</h4>
+                    <p class="text-muted">Advanced encryption and security protocols protecting every transaction and your personal data.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="glass-card p-4 h-100 text-center feature-card">
+                    <div class="feature-icon-wrapper" style="background: var(--accent-gradient);">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h4 class="mb-3">Smart Goals</h4>
+                    <p class="text-muted">Set, track, and achieve your financial goals with our intuitive goal-setting tools.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="glass-card p-4 h-100 text-center feature-card">
+                    <div class="feature-icon-wrapper" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h4 class="mb-3">Instant Payments</h4>
+                    <p class="text-muted">Pay utilities, transfer money, and manage bills instantly from any device, anywhere.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- DEVELOPER SECTION -->
+<section class="developer-section">
+    <div class="container">
+        <h2 class="section-title">Meet The Developer</h2>
+        
+        <div class="row">
+            <div class="col-lg-4 mb-5 mb-lg-0">
+                <!-- Large Profile Image -->
+                {% if url_for('static', filename='images/shichabo.png') %}
+                <img src="{{ url_for('static', filename='images/shichabo.png') }}" 
+                     alt="Shichabo Nkuna - Full Stack Developer" 
+                     class="developer-profile-image">
+                {% else %}
+                <div class="developer-profile-image d-flex align-items-center justify-content-center" 
+                     style="background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);">
+                    <span class="display-3 text-white">SN</span>
+                </div>
+                {% endif %}
+                
+                <div class="text-center mt-4">
+                    <h1 class="developer-name">Shichabo Nkuna</h1>
+                    <p class="developer-title">Full-Stack Developer</p>
+                    
+                  
+                </div>
+            </div>
+            
+            <div class="col-lg-8">
+                <div class="developer-skills-container">
+                    <!-- Summary -->
+                    <div class="developer-summary">
+                        <p>
+                            <strong>Software Developer specializing in software development</strong> with hands-on experience 
+                            in building and deploying 15+ full-stack applications. Proficient in C#, Python, ASP.NET MVC, 
+                            SQL Server and JavaScript with cloud deployment on Microsoft Azure and Oracle Cloud 
+                            Infrastructure (OCI) and Render.
+                        </p>
+                       
+                    </div>
+                    
+                   
+                    
+                    <!-- Call to Action -->
+                    <div class="text-center mt-5">
+                        <a href="https://shichabonkuna22-star.github.io/portfolio/" 
+                           class="btn-gradient-primary btn-lg" 
+                           target="_blank">
+                            <i class="fas fa-external-link-alt me-2"></i> View Full Portfolio
+                        </a>
+                         <!-- Contact Information -->
+                    <div class="developer-contact">
+                       
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-text">shichabonkuna22@gmail.com</div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contact-text">Johannesburg, South Africa</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Social Links -->
+                    <div class="developer-social-links">
+                        <a href="https://www.linkedin.com/in/shichabo-nkuna-7004a2244" 
+                           class="social-link social-linkedin" 
+                           target="_blank"
+                           title="LinkedIn Profile">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://shichabonkuna22-star.github.io/portfolio/" 
+                           class="social-link social-portfolio" 
+                           target="_blank"
+                           title="View Portfolio">
+                            <i class="fas fa-globe"></i>
+                        </a>
+                        <a href="mailto:shichabonkuna22@gmail.com" 
+                           class="social-link social-email" 
+                           title="Send Email">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container position-relative">
+        <h2 class="cta-title">Ready to Experience Modern Banking?</h2>
+        <p class="cta-subtitle">Join thousands of satisfied users who trust Nkuna Banking for their digital banking needs. No hidden fees, no complicated processes.</p>
+        
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="{{ url_for('auth.register') }}" class="btn-gradient-success btn-lg">
+                <i class="fas fa-user-plus me-2"></i> Get Started Free
+            </a>
+            <a href="{{ url_for('about') }}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-info-circle me-2"></i> Learn More
+            </a>
+        </div>
+        
+        <div class="mt-5 pt-4">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="text-center">
+                        <i class="fas fa-user-shield fa-3x mb-3" style="color: #00D4AA;"></i>
+                        <h5 class="text-white">Privacy First</h5>
+                        <p class="text-light small">Your data is encrypted and never shared</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="text-center">
+                        <i class="fas fa-mobile-alt fa-3x mb-3" style="color: #0066CC;"></i>
+                        <h5 class="text-white">Mobile Optimized</h5>
+                        <p class="text-light small">Bank seamlessly on any device</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="text-center">
+                        <i class="fas fa-headset fa-3x mb-3" style="color: #FF6B6B;"></i>
+                        <h5 class="text-white">24/7 Support</h5>
+                        <p class="text-light small">Help available whenever you need it</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-title">What Our Users Say</h2>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">"</div>
+                    <p class="testimonial-text">The 15-minute undo feature saved me from a costly mistake. This is exactly what modern banking should be!</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-author-img">TS</div>
+                        <div>
+                            <h6 class="mb-0">Thandiwe S.</h6>
+                            <small class="text-muted">Small Business Owner</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">"</div>
+                    <p class="testimonial-text">Setting up financial goals has completely changed how I save money. The interface is intuitive and beautiful.</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-author-img">MJ</div>
+                        <div>
+                            <h6 class="mb-0">Michael J.</h6>
+                            <small class="text-muted">Software Engineer</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">"</div>
+                    <p class="testimonial-text">As a student, I appreciate the no-fee structure and how easy it is to manage my finances from my phone.</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-author-img">LP</div>
+                        <div>
+                            <h6 class="mb-0">Lerato P.</h6>
+                            <small class="text-muted">University Student</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Animate counters on scroll
+    document.addEventListener('DOMContentLoaded', function() {
+        const counters = document.querySelectorAll('.counter-number');
+        const speed = 200;
+        
+        const animateCounter = (counter) => {
+            const target = parseInt(counter.innerText);
+            let count = 0;
+            const increment = target / speed;
+            
+            const updateCount = () => {
+                if (count < target) {
+                    count += increment;
+                    counter.innerText = Math.ceil(count) + (counter.innerText.includes('+') ? '+' : '');
+                    setTimeout(updateCount, 1);
+                } else {
+                    counter.innerText = target + (counter.innerText.includes('+') ? '+' : '');
+                }
+            };
+            
+            updateCount();
+        };
+        
+        // Animate when element is in viewport
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        counters.forEach(counter => {
+            observer.observe(counter);
+        });
+        
+        // Animate developer achievements
+        const achievementNumbers = document.querySelectorAll('.achievement-number');
+        achievementNumbers.forEach(number => {
+            observer.observe(number);
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,566 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.full_name }} | User Details | Admin Dashboard{% endblock %}
+
+{% block head %}
+<style>
+    .user-detail-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        color: white;
+        padding: 30px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .user-detail-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .user-avatar-large {
+        width: 100px;
+        height: 100px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        font-weight: bold;
+        color: white;
+        background: linear-gradient(135deg, #00D4AA 0%, #009688 100%);
+        margin-right: 20px;
+    }
+    
+    .user-info-section {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .info-item {
+        padding: 15px;
+        background: #f7fafc;
+        border-radius: 8px;
+    }
+    
+    .info-label {
+        font-size: 0.85rem;
+        color: #718096;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .info-value {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #2d3748;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .section-title {
+        font-weight: 600;
+        font-size: 1.2rem;
+        color: #2d3748;
+        margin: 0;
+    }
+    
+    .status-badge {
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+    
+    .status-active {
+        background: rgba(72, 187, 120, 0.1);
+        color: #48BB78;
+    }
+    
+    .status-inactive {
+        background: rgba(245, 101, 101, 0.1);
+        color: #F56565;
+    }
+    
+    .status-admin {
+        background: rgba(159, 122, 234, 0.1);
+        color: #9F7AEA;
+    }
+    
+    .balance-card {
+        background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+        border-radius: 12px;
+        padding: 25px;
+        color: white;
+        text-align: center;
+    }
+    
+    .balance-amount {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+    
+    .balance-label {
+        opacity: 0.8;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .transaction-item {
+        padding: 15px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .transaction-item:last-child {
+        border-bottom: none;
+    }
+    
+    .transaction-details {
+        flex: 1;
+    }
+    
+    .transaction-type {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    
+    .transaction-meta {
+        color: #718096;
+        font-size: 0.85rem;
+        margin-bottom: 5px;
+    }
+    
+    .transaction-amount {
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-align: right;
+    }
+    
+    .goal-item {
+        padding: 15px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .goal-item:last-child {
+        border-bottom: none;
+    }
+    
+    .goal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .goal-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .goal-amount {
+        font-weight: 700;
+        color: #2d3748;
+    }
+    
+    .goal-progress {
+        margin-bottom: 10px;
+    }
+    
+    .progress-bar {
+        border-radius: 10px;
+        height: 8px;
+    }
+    
+    .goal-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #718096;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    .btn-action {
+        flex: 1;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-weight: 500;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-action:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-danger-action {
+        background: rgba(245, 101, 101, 0.1);
+        color: #F56565;
+        border: 1px solid rgba(245, 101, 101, 0.2);
+    }
+    
+    .btn-danger-action:hover {
+        background: rgba(245, 101, 101, 0.2);
+        color: #F56565;
+    }
+    
+    .btn-primary-action {
+        background: rgba(66, 153, 225, 0.1);
+        color: #4299E1;
+        border: 1px solid rgba(66, 153, 225, 0.2);
+    }
+    
+    .btn-primary-action:hover {
+        background: rgba(66, 153, 225, 0.2);
+        color: #4299E1;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #718096;
+    }
+    
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        opacity: 0.5;
+    }
+    
+    @media (max-width: 768px) {
+        .user-detail-header {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .user-avatar-large {
+            margin: 0 auto 20px;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .transaction-item {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .transaction-amount {
+            text-align: center;
+            margin-top: 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- User Detail Header -->
+    <div class="user-detail-header">
+        <div class="d-flex align-items-center">
+            <div class="user-avatar-large">
+                {{ user.full_name[0]|upper }}
+            </div>
+            <div class="flex-grow-1">
+                <h1 class="h2 mb-2">{{ user.full_name }}</h1>
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    {% if user.is_admin %}
+                    <span class="status-badge status-admin">Administrator</span>
+                    {% elif user.is_active %}
+                    <span class="status-badge status-active">Active User</span>
+                    {% else %}
+                    <span class="status-badge status-inactive">Inactive User</span>
+                    {% endif %}
+                    <span class="opacity-75">Account: {{ user.account_number }}</span>
+                    <span class="opacity-75">Member since {{ format_datetime(user.created_at, include_time=false) }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="{{ url_for('admin.users') }}" class="btn-action btn-primary-action">
+            <i class="fas fa-arrow-left me-2"></i> Back to Users
+        </a>
+        
+        {% if not user.is_admin %}
+        <form method="POST" action="{{ url_for('admin.toggle_user_status', user_id=user.id) }}" class="d-inline flex-grow-1">
+            <button type="submit" class="btn-action {% if user.is_active %}btn-danger-action{% else %}btn-primary-action{% endif %} w-100">
+                {% if user.is_active %}
+                <i class="fas fa-user-slash me-2"></i> Deactivate User
+                {% else %}
+                <i class="fas fa-user-check me-2"></i> Activate User
+                {% endif %}
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="row g-4 mt-3">
+        <!-- User Information -->
+        <div class="col-lg-8">
+            <div class="user-info-section">
+                <div class="section-header">
+                    <h3 class="section-title"><i class="fas fa-user-circle me-2"></i> User Information</h3>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Full Name</div>
+                        <div class="info-value">{{ user.full_name }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Email Address</div>
+                        <div class="info-value">{{ user.email }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">ID Number</div>
+                        <div class="info-value">{{ user.id_number }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Phone Number</div>
+                        <div class="info-value">{{ user.phone }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Account Number</div>
+                        <div class="info-value">{{ user.account_number }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Account Status</div>
+                        <div class="info-value">
+                            {% if user.is_admin %}
+                            Administrator
+                            {% elif user.is_active %}
+                            Active
+                            {% else %}
+                            Inactive
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Registration Date</div>
+                        <div class="info-value">{{ format_datetime(user.created_at) }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Last Login</div>
+                        <div class="info-value">
+                            {% if user.last_login %}
+                            {{ format_datetime(user.last_login) }}
+                            {% else %}
+                            Never logged in
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="user-info-section">
+                <div class="section-header">
+                    <h3 class="section-title"><i class="fas fa-history me-2"></i> Recent Transactions</h3>
+                </div>
+                
+                {% if transactions %}
+                <div class="transactions-list">
+                    {% for transaction in transactions %}
+                    <div class="transaction-item">
+                        <div class="transaction-details">
+                            <div class="transaction-type">
+                                {{ transaction.transaction_type|replace('_', ' ')|title }}
+                                {% if transaction.status == 'reversed' %}
+                                <span class="badge bg-danger ms-2">Reversed</span>
+                                {% endif %}
+                            </div>
+                            <div class="transaction-meta">
+                                {{ format_datetime(transaction.created_at) }}
+                                {% if transaction.reference %}
+                                • {{ transaction.reference }}
+                                {% endif %}
+                            </div>
+                            {% if transaction.recipient_account_number %}
+                            <div class="transaction-meta">
+                                <small>
+                                    {% if transaction.is_sender %}
+                                    To: {{ transaction.recipient_name|default(transaction.recipient_account_number) }}
+                                    {% else %}
+                                    From: {{ transaction.sender_name|default(transaction.sender_account_number) }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="transaction-amount {% if transaction.is_incoming() %}text-success{% else %}text-danger{% endif %}">
+                            {{ transaction.get_amount_display() }}
+                            {% if transaction.admin_fee > 0 %}
+                            <div class="small text-muted">
+                                Fee: {{ format_currency(transaction.admin_fee) }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('admin.transactions') }}?search={{ user.account_number }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-search me-2"></i> View All Transactions
+                    </a>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <p>No transactions found for this user</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Balance Card -->
+            <div class="balance-card mb-4">
+                <div class="balance-amount">{{ format_currency(user.balance) }}</div>
+                <div class="balance-label">Current Balance</div>
+                <div class="mt-3">
+                    <div class="small opacity-75">Available for withdrawal and transfers</div>
+                </div>
+            </div>
+
+            <!-- Financial Goals -->
+            <div class="user-info-section">
+                <div class="section-header">
+                    <h3 class="section-title"><i class="fas fa-bullseye me-2"></i> Financial Goals</h3>
+                </div>
+                
+                {% if goals %}
+                <div class="goals-list">
+                    {% for goal in goals %}
+                    <div class="goal-item">
+                        <div class="goal-header">
+                            <div class="goal-name">{{ goal.goal_name }}</div>
+                            <div class="goal-amount">{{ format_currency(goal.current_amount) }}</div>
+                        </div>
+                        
+                        <div class="goal-progress">
+                            <div class="progress">
+                                <div class="progress-bar {% if goal.is_completed %}bg-success{% else %}bg-primary{% endif %}" 
+                                     role="progressbar" 
+                                     style="width: {{ goal.progress_percentage() }}%">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="goal-meta">
+                            <div>
+                                {{ format_currency(goal.current_amount) }} of {{ format_currency(goal.target_amount) }}
+                            </div>
+                            <div>
+                                {{ goal.progress_percentage()|round(1) }}%
+                            </div>
+                        </div>
+                        
+                        {% if goal.deadline %}
+                        <div class="goal-meta">
+                            <div>Deadline:</div>
+                            <div>{{ goal.deadline.strftime('%d %b %Y') }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <p>No financial goals set</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Account Statistics -->
+            <div class="user-info-section">
+                <div class="section-header">
+                    <h3 class="section-title"><i class="fas fa-chart-bar me-2"></i> Account Statistics</h3>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Total Transactions</div>
+                        <div class="info-value">{{ user.transactions|length }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Financial Goals</div>
+                        <div class="info-value">{{ goals|length }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Total Deposits</div>
+                        <div class="info-value">
+                            {{ format_currency(user.transactions|selectattr('transaction_type', 'equalto', 'deposit')|map(attribute='amount')|sum) }}
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Total Transfers</div>
+                        <div class="info-value">
+                            {{ format_currency(user.transactions|selectattr('transaction_type', 'equalto', 'transfer')|selectattr('is_sender', 'equalto', true)|map(attribute='amount')|sum) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

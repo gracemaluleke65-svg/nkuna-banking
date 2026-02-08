@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - Nkuna Banking{% endblock %}
+
+{% block head %}
+<style>
+    .contact-hero {
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);
+        padding: 80px 0;
+        border-radius: 0 0 40px 40px;
+        margin-bottom: -40px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .contact-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .contact-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .contact-info-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 40px;
+        color: white;
+        height: 100%;
+    }
+    
+    .contact-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+    
+    .form-floating-custom {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .form-floating-custom input,
+    .form-floating-custom textarea {
+        width: 100%;
+        padding: 16px 16px 16px 50px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .form-floating-custom input:focus,
+    .form-floating-custom textarea:focus {
+        border-color: #0066CC;
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        outline: none;
+    }
+    
+    .form-floating-custom i {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a0aec0;
+        transition: color 0.3s ease;
+    }
+    
+    .form-floating-custom textarea ~ i {
+        top: 25px;
+        transform: none;
+    }
+    
+    .form-floating-custom input:focus ~ i,
+    .form-floating-custom textarea:focus ~ i {
+        color: #0066CC;
+    }
+    
+    .form-floating-custom label {
+        position: absolute;
+        left: 50px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a0aec0;
+        pointer-events: none;
+        transition: all 0.3s ease;
+        background: white;
+        padding: 0 5px;
+    }
+    
+    .form-floating-custom textarea ~ label {
+        top: 20px;
+        transform: none;
+    }
+    
+    .form-floating-custom input:focus ~ label,
+    .form-floating-custom input:not(:placeholder-shown) ~ label,
+    .form-floating-custom textarea:focus ~ label,
+    .form-floating-custom textarea:not(:placeholder-shown) ~ label {
+        top: 0;
+        transform: translateY(-50%) scale(0.85);
+        color: #0066CC;
+    }
+    
+    .btn-send {
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);
+        border: none;
+        color: white;
+        padding: 16px 40px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);
+        width: 100%;
+    }
+    
+    .btn-send:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 102, 204, 0.4);
+        color: white;
+    }
+    
+    .success-animation {
+        animation: successPulse 0.5s ease;
+    }
+    
+    @keyframes successPulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    @media (max-width: 768px) {
+        .contact-hero {
+            padding: 60px 0;
+        }
+        
+        .contact-card {
+            padding: 25px;
+        }
+        
+        .contact-info-card {
+            margin-bottom: 30px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="contact-hero">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold text-white mb-3">Get In Touch</h1>
+        <p class="lead text-white-50 mb-0">We're here to help and answer any questions you might have</p>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="py-5 mt-5">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Contact Info -->
+            <div class="col-lg-4">
+                <div class="contact-info-card">
+                    <h3 class="mb-4">Contact Information</h3>
+                    <p class="mb-4">Fill out the form and our team will get back to you within 24 hours.</p>
+                    
+                    <div class="mb-4">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h5>Email Us</h5>
+                        <p class="mb-0">Our support team</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h5>Location</h5>
+                        <p class="mb-0">Johannesburg, South Africa</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="contact-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h5>Business Hours</h5>
+                        <p class="mb-0">Mon - Fri: 9AM - 5PM SAST</p>
+                    </div>
+                    
+                    <hr class="my-4" style="border-color: rgba(255,255,255,0.2);">
+                    
+                    <h5 class="mb-3">Prefer Live Chat?</h5>
+                    <p class="small mb-3">Get instant help from our support team through our in-app chat feature.</p>
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('chat.chat') }}" class="btn btn-light w-100">
+                        <i class="fas fa-comments me-2"></i> Open Live Chat
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-light w-100">
+                        <i class="fas fa-sign-in-alt me-2"></i> Login to Chat
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Contact Form -->
+            <div class="col-lg-8">
+                <div class="contact-card">
+                    <h3 class="mb-4">Send us a Message</h3>
+                    <p class="text-muted mb-4">Have a question or need assistance? Fill out the form below and we'll get back to you as soon as possible.</p>
+                    
+                    <form method="POST" action="{{ url_for('contact') }}" id="contactForm">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating-custom">
+                                    {{ form.full_name(class="form-control", placeholder="Full Name") }}
+                                    <i class="fas fa-user"></i>
+                                    {{ form.full_name.label }}
+                                    {% if form.full_name.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.full_name.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating-custom">
+                                    {{ form.email(class="form-control", placeholder="Your Email Address") }}
+                                    <i class="fas fa-envelope"></i>
+                                    {{ form.email.label }}
+                                    {% if form.email.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.email.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-floating-custom">
+                            {{ form.subject(class="form-control", placeholder="Subject") }}
+                            <i class="fas fa-heading"></i>
+                            {{ form.subject.label }}
+                            {% if form.subject.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.subject.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-floating-custom">
+                            {{ form.message(class="form-control", placeholder="Your Message", style="height: 150px;") }}
+                            <i class="fas fa-comment-alt"></i>
+                            {{ form.message.label }}
+                            {% if form.message.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.message.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-send" id="submitBtn">
+                                <i class="fas fa-paper-plane me-2"></i> Send Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FAQ Section -->
+        <div class="row mt-5">
+            <div class="col-12 text-center mb-4">
+                <h3>Frequently Asked Questions</h3>
+                <p class="text-muted">Quick answers to common questions</p>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="glass-card p-4 h-100">
+                    <h5><i class="fas fa-question-circle text-primary me-2"></i> Is this real banking?</h5>
+                    <p class="text-muted mb-0">No, this is a demonstration application for educational purposes. No real money is involved.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="glass-card p-4 h-100">
+                    <h5><i class="fas fa-undo text-primary me-2"></i> Can I undo transactions?</h5>
+                    <p class="text-muted mb-0">Yes! You can undo transactions within 15 minutes of making them.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="glass-card p-4 h-100">
+                    <h5><i class="fas fa-shield-alt text-primary me-2"></i> Is my data secure?</h5>
+                    <p class="text-muted mb-0">We use industry-standard security measures to protect your information.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('contactForm');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        form.addEventListener('submit', function(e) {
+            // Show loading state
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Sending...';
+            submitBtn.disabled = true;
+            
+            // Re-enable after 2 seconds (form will submit normally)
+            setTimeout(() => {
+                submitBtn.innerHTML = '<i class="fas fa-check me-2"></i> Message Sent!';
+                submitBtn.classList.add('success-animation');
+            }, 500);
+        });
+    });
+</script>
+{% endblock %}

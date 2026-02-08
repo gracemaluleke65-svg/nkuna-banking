@@ -1,0 +1,668 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - Nkuna Banking{% endblock %}
+
+{% block head %}
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 40px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: -50px;
+    }
+    
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #00D4AA 0%, #009688 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: white;
+        border: 5px solid white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        margin: 0 auto 20px;
+    }
+    
+    .info-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: var(--shadow-medium);
+        height: 100%;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .info-card:hover {
+        transform: translateY(-5px);
+        border-color: #0066CC;
+    }
+    
+    .info-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+        margin-bottom: 20px;
+    }
+    
+    .info-label {
+        color: #718096;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+    
+    .info-value {
+        font-family: 'Poppins', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0;
+    }
+    
+    .activity-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: var(--shadow-light);
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .activity-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-medium);
+    }
+    
+    .activity-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        color: white;
+    }
+    
+    .badge-status {
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .security-note {
+        background: linear-gradient(135deg, #FFEAA7 0%, #FDCB6E 100%);
+        border-radius: 15px;
+        padding: 25px;
+        border-left: 5px solid #E17055;
+    }
+    
+    .qr-code {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--shadow-light);
+    }
+    
+    .qr-placeholder {
+        width: 150px;
+        height: 150px;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #a0aec0;
+        font-size: 14px;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+    
+    .edit-btn {
+        background: linear-gradient(135deg, #00D4AA 0%, #009688 100%);
+        border: none;
+        color: white;
+        padding: 10px 25px;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);
+    }
+    
+    .edit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 212, 170, 0.4);
+        color: white;
+    }
+    
+    .account-health {
+        height: 10px;
+        background: #e2e8f0;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+    
+    .account-health-bar {
+        height: 100%;
+        background: linear-gradient(135deg, #00D4AA 0%, #009688 100%);
+        border-radius: 5px;
+        transition: width 1s ease;
+    }
+    
+    .tooltip-custom {
+        position: relative;
+        cursor: pointer;
+    }
+    
+    .tooltip-custom::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #2d3748;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 1000;
+    }
+    
+    .tooltip-custom:hover::after {
+        opacity: 1;
+        visibility: visible;
+        bottom: calc(100% + 10px);
+    }
+    
+    @media (max-width: 768px) {
+        .profile-header {
+            padding: 30px 20px;
+            margin-bottom: -30px;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            font-size: 36px;
+        }
+        
+        .info-value {
+            font-size: 1.25rem;
+        }
+        
+        .info-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Profile Header -->
+<div class="profile-header">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-md-3 text-center text-md-start mb-4 mb-md-0">
+                <div class="profile-avatar">
+                    {{ user.full_name[0]|upper }}
+                </div>
+            </div>
+            <div class="col-md-6 text-center text-md-start">
+                <h1 class="display-6 fw-bold mb-2">{{ user.full_name }}</h1>
+                <p class="mb-1">
+                    <i class="fas fa-envelope me-2"></i>{{ user.email }}
+                    {% if user.is_admin %}
+                    <span class="badge bg-danger ms-2">Admin</span>
+                    {% endif %}
+                </p>
+                <p class="mb-0">
+                    <i class="fas fa-calendar-alt me-2"></i>
+                    Member since {{ user.created_at.strftime('%B %Y') }}
+                </p>
+            </div>
+            <div class="col-md-3 text-center text-md-end">
+                <div class="d-inline-block bg-white text-dark rounded-pill px-4 py-2">
+                    <small class="text-muted">Account Status</small>
+                    <div class="fw-bold">
+                        {% if user.is_active %}
+                        <span class="text-success">Active</span>
+                        {% else %}
+                        <span class="text-danger">Inactive</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Main Profile Content -->
+    <div class="row mt-5 pt-4">
+        <!-- Account Information -->
+        <div class="col-lg-8">
+            <div class="row g-4">
+                <!-- Balance Card -->
+                <div class="col-md-6">
+                    <div class="info-card">
+                        <div class="info-icon" style="background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="info-label">Current Balance</div>
+                        <div class="info-value">{{ format_currency(user.balance) }}</div>
+                        <div class="account-health mt-3">
+                            <div class="account-health-bar" style="width: 
+                                {% if user.balance > 10000 %}
+                                    100%
+                                {% elif user.balance > 5000 %}
+                                    75%
+                                {% elif user.balance > 1000 %}
+                                    50%
+                                {% elif user.balance > 100 %}
+                                    25%
+                                {% else %}
+                                    10%
+                                {% endif %};">
+                            </div>
+                        </div>
+                        <small class="text-muted mt-2 d-block">
+                            {% if user.balance > 10000 %}
+                            Excellent account health
+                            {% elif user.balance > 5000 %}
+                            Good account health
+                            {% elif user.balance > 1000 %}
+                            Average account health
+                            {% elif user.balance > 100 %}
+                            Low balance
+                            {% else %}
+                            Very low balance
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+                
+                <!-- Account Number -->
+                <div class="col-md-6">
+                    <div class="info-card">
+                        <div class="info-icon" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="info-label">Account Number</div>
+                        <div class="info-value">{{ user.account_number }}</div>
+                        <div class="mt-3">
+                            <button class="btn btn-outline-primary btn-sm copy-to-clipboard" data-text="{{ user.account_number }}">
+                                <i class="fas fa-copy me-1"></i> Copy Account Number
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Personal Information -->
+                <div class="col-12">
+                    <div class="info-card">
+                        <h4 class="mb-4"><i class="fas fa-user-circle me-2"></i> Personal Information</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="mb-2">
+                                    <div class="info-label">Full Name</div>
+                                    <div class="fw-semibold">{{ user.full_name }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="mb-2">
+                                    <div class="info-label">Email Address</div>
+                                    <div class="fw-semibold">{{ user.email }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="mb-2">
+                                    <div class="info-label">ID Number</div>
+                                    <div class="fw-semibold d-flex align-items-center">
+                                        {{ user.id_number }}
+                                        <i class="fas fa-lock text-success ms-2" data-tooltip="Protected Information"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="mb-2">
+                                    <div class="info-label">Phone Number</div>
+                                    <div class="fw-semibold">{{ user.phone }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="mb-2">
+                                    <div class="info-label">Account Type</div>
+                                    <div class="fw-semibold">
+                                        {% if user.is_admin %}
+                                        Administrator
+                                        {% else %}
+                                        Standard Account
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="mb-2">
+                                    <div class="info-label">Account Created</div>
+                                    <div class="fw-semibold">{{ user.created_at.strftime('%d %B %Y') }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="col-12">
+                    <div class="info-card">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="mb-0"><i class="fas fa-history me-2"></i> Recent Activity</h4>
+                            <a href="{{ url_for('user.history') }}" class="btn btn-outline-primary btn-sm">
+                                View All <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                        
+                        {% if recent_transactions %}
+                        <div class="activity-list">
+                            {% for transaction in recent_transactions[:3] %}
+                            <div class="activity-card">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <div class="activity-icon" style="background: 
+                                            {% if transaction.transaction_type == 'deposit' %}
+                                                linear-gradient(135deg, #00D4AA 0%, #009688 100%)
+                                            {% elif transaction.transaction_type == 'transfer' %}
+                                                linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%)
+                                            {% elif transaction.transaction_type == 'utility' %}
+                                                linear-gradient(135deg, #FF6B6B 0%, #EE5A24 100%)
+                                            {% else %}
+                                                linear-gradient(135deg, #0066CC 0%, #0047AB 100%)
+                                            {% endif %};">
+                                            <i class="fas fa-{% if transaction.transaction_type == 'deposit' %}money-bill-wave{% elif transaction.transaction_type == 'transfer' %}exchange-alt{% elif transaction.transaction_type == 'utility' %}bolt{% else %}chart-line{% endif %}"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="fw-semibold">{{ transaction.get_description() }}</div>
+                                        <small class="text-muted">{{ format_datetime(transaction.created_at) }}</small>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="fw-bold {% if transaction.is_incoming() %}text-success{% else %}text-danger{% endif %}">
+                                            {% if transaction.is_incoming() %}+{% else %}-{% endif %}{{ format_currency(transaction.amount) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No recent activity</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar - Security & Quick Actions -->
+        <div class="col-lg-4">
+            <!-- Security Status -->
+            <div class="info-card mb-4">
+                <h4 class="mb-4"><i class="fas fa-shield-alt me-2"></i> Security Status</h4>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Account Protection</span>
+                        <span class="text-success">
+                            <i class="fas fa-check-circle"></i> Active
+                        </span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: 100%;"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Data Encryption</span>
+                        <span class="text-success">
+                            <i class="fas fa-check-circle"></i> Enabled
+                        </span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: 100%;"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Session Security</span>
+                        <span class="text-success">
+                            <i class="fas fa-check-circle"></i> Secure
+                        </span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: 100%;"></div>
+                    </div>
+                </div>
+                
+                <div class="security-note mt-4">
+                    <h6><i class="fas fa-exclamation-triangle me-2"></i> Important Security Note</h6>
+                    <p class="small mb-0">
+                        Your account is protected by bank-level encryption. Never share your password, PIN, or OTP with anyone. Nkuna Banking will never ask for your password via email or phone.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Quick Account QR -->
+            <div class="info-card mb-4">
+                <h4 class="mb-4"><i class="fas fa-qrcode me-2"></i> Quick Account QR</h4>
+                <div class="qr-code">
+                    <div class="qr-placeholder">
+                        <div>
+                            <i class="fas fa-qrcode fa-3x mb-2"></i>
+                            <div>Scan for Account</div>
+                            <div>Details</div>
+                        </div>
+                    </div>
+                    <p class="text-muted small text-center mb-0">
+                        Scan this QR code to quickly access your account details on mobile devices.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="info-card">
+                <h4 class="mb-4"><i class="fas fa-bolt me-2"></i> Quick Actions</h4>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('user.deposit') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-money-bill-wave me-2"></i> Make Deposit
+                    </a>
+                    <a href="{{ url_for('user.transfer') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-share me-2"></i> Transfer Money
+                    </a>
+                    <a href="{{ url_for('user.utilities') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-bolt me-2"></i> Pay Utilities
+                    </a>
+                    <a href="{{ url_for('user.goals') }}" class="btn btn-outline-success">
+                        <i class="fas fa-bullseye me-2"></i> Manage Goals
+                    </a>
+                    <hr>
+                    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#accountReportModal">
+                        <i class="fas fa-download me-2"></i> Download Statement
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Account Report Modal -->
+<div class="modal fade" id="accountReportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-file-pdf me-2"></i> Download Account Statement</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Select the date range for your account statement:</p>
+                <form id="reportForm">
+                    <div class="mb-3">
+                        <label class="form-label">From Date</label>
+                        <input type="date" class="form-control" id="fromDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">To Date</label>
+                        <input type="date" class="form-control" id="toDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Format</label>
+                        <select class="form-select" id="format">
+                            <option value="pdf">PDF Document</option>
+                            <option value="csv">CSV Spreadsheet</option>
+                            <option value="excel">Excel File</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="generateReport()">
+                    <i class="fas fa-download me-2"></i> Generate Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Copy to clipboard functionality
+        document.querySelectorAll('.copy-to-clipboard').forEach(button => {
+            button.addEventListener('click', function() {
+                const text = this.getAttribute('data-text');
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check me-1"></i> Copied!';
+                    this.classList.remove('btn-outline-primary');
+                    this.classList.add('btn-success');
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalHTML;
+                        this.classList.remove('btn-success');
+                        this.classList.add('btn-outline-primary');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    alert('Failed to copy to clipboard');
+                });
+            });
+        });
+        
+        // Tooltip initialization
+        const tooltipElements = document.querySelectorAll('[data-tooltip]');
+        tooltipElements.forEach(el => {
+            el.addEventListener('mouseenter', function() {
+                // Tooltip is handled by CSS
+            });
+        });
+        
+        // Set default dates for report
+        const today = new Date();
+        const lastMonth = new Date();
+        lastMonth.setMonth(today.getMonth() - 1);
+        
+        document.getElementById('fromDate').valueAsDate = lastMonth;
+        document.getElementById('toDate').valueAsDate = today;
+        
+        // Animate account health bar
+        const healthBar = document.querySelector('.account-health-bar');
+        if (healthBar) {
+            const width = healthBar.style.width;
+            healthBar.style.width = '0%';
+            setTimeout(() => {
+                healthBar.style.width = width;
+            }, 300);
+        }
+    });
+    
+    function generateReport() {
+        const fromDate = document.getElementById('fromDate').value;
+        const toDate = document.getElementById('toDate').value;
+        const format = document.getElementById('format').value;
+        
+        if (!fromDate || !toDate) {
+            alert('Please select both dates');
+            return;
+        }
+        
+        // Show loading state
+        const button = document.querySelector('#accountReportModal .btn-primary');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Generating...';
+        button.disabled = true;
+        
+        // Simulate report generation
+        setTimeout(() => {
+            // In a real application, this would generate and download the report
+            alert(`Report for ${fromDate} to ${toDate} in ${format.toUpperCase()} format would be downloaded. This is a demo.`);
+            
+            // Reset button
+            button.innerHTML = originalText;
+            button.disabled = false;
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('accountReportModal'));
+            modal.hide();
+        }, 1500);
+    }
+    
+    // Account health tooltip
+    const accountHealth = document.querySelector('.account-health');
+    if (accountHealth) {
+        accountHealth.setAttribute('data-tooltip', 
+            `Balance Health: ${document.querySelector('.account-health + small').textContent}`
+        );
+        accountHealth.classList.add('tooltip-custom');
+    }
+</script>
+{% endblock %}

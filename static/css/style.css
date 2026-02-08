@@ -1,0 +1,168 @@
+/* Nkuna Banking Custom Styles */
+
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --success-color: #27ae60;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
+    --light-bg: #f8f9fa;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.card {
+    border-radius: 12px;
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+}
+
+.quick-action-card {
+    transition: all 0.3s ease;
+    border: 1px solid #dee2e6;
+}
+
+.quick-action-card:hover {
+    border-color: var(--secondary-color);
+    background-color: rgba(52, 152, 219, 0.05);
+}
+
+.quick-action-icon {
+    width: 70px;
+    height: 70px;
+}
+
+.progress {
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 10px 15px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+}
+
+.btn {
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-lg {
+    padding: 12px 30px;
+}
+
+.btn-primary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+    transform: translateY(-1px);
+}
+
+.alert {
+    border-radius: 8px;
+    border: none;
+}
+
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead th {
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.badge {
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-weight: 500;
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.goal-item {
+    padding: 15px;
+    border-radius: 8px;
+    background-color: var(--light-bg);
+    margin-bottom: 15px;
+    border-left: 4px solid var(--success-color);
+}
+
+.summary-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.alert {
+    animation: slideIn 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem !important;
+    }
+    
+    .display-6 {
+        font-size: 2rem;
+    }
+    
+    .quick-action-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+}

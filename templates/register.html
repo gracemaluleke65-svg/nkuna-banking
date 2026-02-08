@@ -1,0 +1,833 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Join Nkuna Banking{% endblock %}
+
+{% block head %}
+<style>
+    .register-container {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 0;
+    }
+    
+    .register-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 25px 60px rgba(0, 102, 204, 0.15);
+        overflow: hidden;
+        width: 100%;
+        max-width: 900px;
+        transition: all 0.4s ease;
+    }
+    
+    .register-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 35px 80px rgba(0, 102, 204, 0.25);
+    }
+    
+    .register-left {
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);
+        padding: 50px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .register-left::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .register-right {
+        padding: 50px;
+    }
+    
+    .register-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .register-subtitle {
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-bottom: 40px;
+    }
+    
+    .feature-list {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .feature-list-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 25px;
+        transition: transform 0.3s ease;
+    }
+    
+    .feature-list-item:hover {
+        transform: translateX(10px);
+    }
+    
+    .feature-icon {
+        width: 45px;
+        height: 45px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+    
+    .feature-text h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+    
+    .feature-text p {
+        margin: 5px 0 0;
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+        position: relative;
+    }
+    
+    .form-control-modern {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 14px 18px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    
+    .form-control-modern:focus {
+        border-color: #0066CC;
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        outline: none;
+        transform: translateY(-2px);
+    }
+    
+    .form-control-modern.is-invalid {
+        border-color: #e74c3c;
+        box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+    }
+    
+    .form-control-modern.is-valid {
+        border-color: #27ae60;
+        box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+    }
+    
+    .input-group-text {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-right: none;
+        border-radius: 12px 0 0 12px;
+        color: #6c757d;
+    }
+    
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #e2e8f0;
+        margin-top: 0.2rem;
+    }
+    
+    .form-check-input:checked {
+        background-color: #0066CC;
+        border-color: #0066CC;
+    }
+    
+    .form-check-label {
+        color: #4a5568;
+        font-size: 0.95rem;
+    }
+    
+    .help-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+    
+    .demo-notice {
+        background: linear-gradient(135deg, #FFF3CD 0%, #FFEAA7 100%);
+        border-radius: 12px;
+        padding: 15px;
+        margin: 25px 0;
+        border-left: 4px solid #F39C12;
+    }
+    
+    .demo-notice-icon {
+        color: #E17055;
+        font-size: 1.5rem;
+        margin-right: 10px;
+    }
+    
+    .password-strength {
+        height: 5px;
+        background: #e2e8f0;
+        border-radius: 3px;
+        margin-top: 5px;
+        overflow: hidden;
+    }
+    
+    .password-strength-bar {
+        height: 100%;
+        width: 0%;
+        background: #e74c3c;
+        border-radius: 3px;
+        transition: width 0.3s ease, background 0.3s ease;
+    }
+    
+    .password-strength-text {
+        font-size: 0.85rem;
+        margin-top: 5px;
+        font-weight: 500;
+    }
+    
+    .btn-register {
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);
+        border: none;
+        color: white;
+        padding: 16px 30px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(0, 102, 204, 0.3);
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-register:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(0, 102, 204, 0.4);
+        color: white;
+    }
+    
+    .btn-register:active {
+        transform: translateY(-1px);
+    }
+    
+    .btn-register::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.5);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1, 1) translate(-50%);
+        transform-origin: 50% 50%;
+    }
+    
+    .btn-register:focus:not(:active)::after {
+        animation: ripple 1s ease-out;
+    }
+    
+    @keyframes ripple {
+        0% {
+            transform: scale(0, 0);
+            opacity: 0.5;
+        }
+        20% {
+            transform: scale(25, 25);
+            opacity: 0.3;
+        }
+        100% {
+            opacity: 0;
+            transform: scale(40, 40);
+        }
+    }
+    
+    .login-link {
+        text-align: center;
+        margin-top: 25px;
+        color: #6c757d;
+    }
+    
+    .login-link a {
+        color: #0066CC;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .login-link a:hover {
+        color: #0047AB;
+        text-decoration: underline;
+    }
+    
+    .input-hint {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        font-size: 0.9rem;
+        display: none;
+    }
+    
+    .form-control-modern:focus + .input-hint {
+        display: block;
+    }
+    
+    .validation-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: none;
+    }
+    
+    .form-control-modern.is-valid + .validation-icon .valid-icon {
+        display: block;
+        color: #27ae60;
+    }
+    
+    .form-control-modern.is-invalid + .validation-icon .invalid-icon {
+        display: block;
+        color: #e74c3c;
+    }
+    
+    @media (max-width: 992px) {
+        .register-left {
+            padding: 40px;
+        }
+        
+        .register-right {
+            padding: 40px;
+        }
+        
+        .register-title {
+            font-size: 2rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .register-container {
+            padding: 20px;
+        }
+        
+        .register-left, .register-right {
+            padding: 30px;
+        }
+        
+        .register-card {
+            border-radius: 20px;
+        }
+        
+        .feature-list-item {
+            margin-bottom: 20px;
+        }
+        
+        .btn-register {
+            padding: 14px 25px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    <div class="register-card">
+        <div class="row g-0">
+            <!-- Left Side: Features & Benefits -->
+            <div class="col-lg-5">
+                <div class="register-left">
+                    <div class="feature-list">
+                        <h2 class="text-white mb-4">Welcome to <br>Nkuna Banking</h2>
+                        <p class="text-white mb-5" style="opacity: 0.9;">Join thousands who trust us with their digital banking needs. Experience banking reimagined.</p>
+                        
+                        <div class="feature-list-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-undo"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h5 class="text-white">15-Minute Transaction Undo</h5>
+                                <p class="text-white">Change your mind? Reverse transactions within 15 minutes.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-list-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h5 class="text-white">Bank-Level Security</h5>
+                                <p class="text-white">Military-grade encryption protects your data and transactions.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-list-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h5 class="text-white">Financial Goals</h5>
+                                <p class="text-white">Set and track savings goals with our intuitive tools.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-list-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h5 class="text-white">Instant Payments</h5>
+                                <p class="text-white">Transfer money and pay bills instantly, 24/7.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-5 pt-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle fa-2x text-success me-3"></i>
+                                <div>
+                                    <h5 class="text-white mb-1">Free Forever</h5>
+                                    <p class="text-white mb-0" style="opacity: 0.8;">No monthly fees or hidden charges</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Side: Registration Form -->
+            <div class="col-lg-7">
+                <div class="register-right">
+                    <h1 class="register-title">Create Account</h1>
+                    <p class="register-subtitle">Join Nkuna Banking in just a few minutes</p>
+                    
+                    <!-- Demo Notice -->
+                    <div class="demo-notice">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-info-circle demo-notice-icon"></i>
+                            <div>
+                                <strong>Important:</strong> This is a demonstration application. <strong class="text-danger">NO REAL MONEY</strong> is involved. You will never be asked for real banking details or cards.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm">
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Full Name -->
+                        <div class="form-group">
+                            <label for="full_name" class="form-label">Full Name *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                {{ form.full_name(class="form-control-modern" + (" is-invalid" if form.full_name.errors else ""), 
+                                  placeholder="Enter your full name", id="full_name", required=true) }}
+                                <div class="validation-icon">
+                                    <i class="fas fa-check-circle valid-icon" style="display: none;"></i>
+                                    <i class="fas fa-times-circle invalid-icon" style="display: none;"></i>
+                                </div>
+                            </div>
+                            {% for error in form.full_name.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                            <div class="help-text">As per your official identification document</div>
+                        </div>
+                        
+                        <!-- Email Address -->
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email Address *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                {{ form.email(class="form-control-modern" + (" is-invalid" if form.email.errors else ""), 
+                                  placeholder="name@example.com", id="email", type="email", required=true) }}
+                                <div class="validation-icon">
+                                    <i class="fas fa-check-circle valid-icon" style="display: none;"></i>
+                                    <i class="fas fa-times-circle invalid-icon" style="display: none;"></i>
+                                </div>
+                            </div>
+                            {% for error in form.email.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                            <div class="help-text">We'll send important notifications to this address</div>
+                        </div>
+                        
+                        <div class="row">
+                            <!-- ID Number -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="id_number" class="form-label">ID Number *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-id-card"></i>
+                                        </span>
+                                        {{ form.id_number(class="form-control-modern" + (" is-invalid" if form.id_number.errors else ""), 
+                                          placeholder="13 digits, no spaces", id="id_number", maxlength="13", pattern="[0-9]{13}", 
+                                          title="13-digit South African ID number", required=true) }}
+                                        <div class="validation-icon">
+                                            <i class="fas fa-check-circle valid-icon" style="display: none;"></i>
+                                            <i class="fas fa-times-circle invalid-icon" style="display: none;"></i>
+                                        </div>
+                                    </div>
+                                    {% for error in form.id_number.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                    <div class="help-text">South African ID number only (13 digits)</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Phone Number -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone" class="form-label">Phone Number *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-phone"></i>
+                                        </span>
+                                        {{ form.phone(class="form-control-modern" + (" is-invalid" if form.phone.errors else ""), 
+                                          placeholder="0123456789", id="phone", maxlength="10", pattern="[0-9]{10}", 
+                                          title="10-digit South African phone number starting with 0", required=true) }}
+                                        <div class="validation-icon">
+                                            <i class="fas fa-check-circle valid-icon" style="display: none;"></i>
+                                            <i class="fas fa-times-circle invalid-icon" style="display: none;"></i>
+                                        </div>
+                                    </div>
+                                    {% for error in form.phone.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                    <div class="help-text">10 digits, starting with 0</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Password -->
+                        <div class="form-group">
+                            <label for="password" class="form-label">Password *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                {{ form.password(class="form-control-modern" + (" is-invalid" if form.password.errors else ""), 
+                                  placeholder="Minimum 8 characters", id="password", type="password", required=true) }}
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <div class="validation-icon">
+                                    <i class="fas fa-check-circle valid-icon" style="display: none;"></i>
+                                    <i class="fas fa-times-circle invalid-icon" style="display: none;"></i>
+                                </div>
+                            </div>
+                            <div class="password-strength mt-2">
+                                <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                            </div>
+                            <div class="password-strength-text" id="passwordStrengthText"></div>
+                            {% for error in form.password.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                            <div class="help-text">Must be at least 8 characters long</div>
+                        </div>
+                        
+                        <!-- Confirm Password -->
+                        <div class="form-group">
+                            <label for="confirm_password" class="form-label">Confirm Password *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                {{ form.confirm_password(class="form-control-modern" + (" is-invalid" if form.confirm_password.errors else ""), 
+                                  placeholder="Re-enter your password", id="confirm_password", type="password", required=true) }}
+                                <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <div class="validation-icon">
+                                    <i class="fas fa-check-circle valid-icon" style="display: none;"></i>
+                                    <i class="fas fa-times-circle invalid-icon" style="display: none;"></i>
+                                </div>
+                            </div>
+                            <div id="passwordMatchMessage" class="help-text mt-2"></div>
+                            {% for error in form.confirm_password.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Terms Agreement -->
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="termsAgreement" required>
+                                <label class="form-check-label" for="termsAgreement">
+                                    I agree that this is a <strong>demonstration application</strong> and no real money or financial information is involved. I understand this is for portfolio and educational purposes only.
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn-register" id="submitButton">
+                                <i class="fas fa-user-plus me-2"></i> Create Account
+                            </button>
+                        </div>
+                        
+                        <!-- Login Link -->
+                        <div class="login-link">
+                            Already have an account? 
+                            <a href="{{ url_for('auth.login') }}">Login here</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Password visibility toggle
+        const togglePassword = document.getElementById('togglePassword');
+        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+        const passwordField = document.getElementById('password');
+        const confirmPasswordField = document.getElementById('confirm_password');
+        
+        togglePassword.addEventListener('click', function() {
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+        
+        toggleConfirmPassword.addEventListener('click', function() {
+            const type = confirmPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPasswordField.setAttribute('type', type);
+            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+        
+        // Password strength indicator
+        passwordField.addEventListener('input', function() {
+            const password = this.value;
+            const strengthBar = document.getElementById('passwordStrengthBar');
+            const strengthText = document.getElementById('passwordStrengthText');
+            
+            let strength = 0;
+            let text = '';
+            let color = '';
+            
+            if (password.length >= 8) strength += 25;
+            if (/[A-Z]/.test(password)) strength += 25;
+            if (/[0-9]/.test(password)) strength += 25;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 25;
+            
+            if (strength === 0) {
+                text = '';
+                color = '#e74c3c';
+            } else if (strength <= 25) {
+                text = 'Weak';
+                color = '#e74c3c';
+            } else if (strength <= 50) {
+                text = 'Fair';
+                color = '#f39c12';
+            } else if (strength <= 75) {
+                text = 'Good';
+                color = '#3498db';
+            } else {
+                text = 'Strong';
+                color = '#27ae60';
+            }
+            
+            strengthBar.style.width = strength + '%';
+            strengthBar.style.background = color;
+            strengthText.textContent = text;
+            strengthText.style.color = color;
+            
+            // Validate field
+            validateField(this);
+        });
+        
+        // Password confirmation check
+        confirmPasswordField.addEventListener('input', function() {
+            const password = passwordField.value;
+            const confirmPassword = this.value;
+            const messageElement = document.getElementById('passwordMatchMessage');
+            
+            if (confirmPassword === '') {
+                messageElement.textContent = '';
+                messageElement.style.color = '#6c757d';
+            } else if (password === confirmPassword) {
+                messageElement.textContent = '✓ Passwords match';
+                messageElement.style.color = '#27ae60';
+            } else {
+                messageElement.textContent = '✗ Passwords do not match';
+                messageElement.style.color = '#e74c3c';
+            }
+            
+            validateField(this);
+        });
+        
+        // Real-time field validation
+        const fieldsToValidate = ['full_name', 'email', 'id_number', 'phone', 'password', 'confirm_password'];
+        
+        fieldsToValidate.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener('blur', function() {
+                    validateField(this);
+                });
+                
+                field.addEventListener('input', function() {
+                    // Clear validation state on new input
+                    this.classList.remove('is-valid', 'is-invalid');
+                    const validationIcon = this.parentElement.parentElement.querySelector('.validation-icon');
+                    if (validationIcon) {
+                        validationIcon.querySelector('.valid-icon').style.display = 'none';
+                        validationIcon.querySelector('.invalid-icon').style.display = 'none';
+                    }
+                });
+            }
+        });
+        
+        function validateField(field) {
+            const value = field.value.trim();
+            let isValid = true;
+            
+            // Clear previous validation
+            field.classList.remove('is-valid', 'is-invalid');
+            const validationIcon = field.parentElement.parentElement.querySelector('.validation-icon');
+            if (validationIcon) {
+                validationIcon.querySelector('.valid-icon').style.display = 'none';
+                validationIcon.querySelector('.invalid-icon').style.display = 'none';
+            }
+            
+            // Skip validation for empty fields (except when they're required and empty)
+            if (value === '') {
+                return;
+            }
+            
+            // Field-specific validation
+            switch(field.id) {
+                case 'full_name':
+                    isValid = value.length >= 2 && value.length <= 100;
+                    break;
+                    
+                case 'email':
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    isValid = emailRegex.test(value);
+                    break;
+                    
+                case 'id_number':
+                    const idRegex = /^\d{13}$/;
+                    isValid = idRegex.test(value);
+                    break;
+                    
+                case 'phone':
+                    const phoneRegex = /^0\d{9}$/;
+                    isValid = phoneRegex.test(value);
+                    break;
+                    
+                case 'password':
+                    isValid = value.length >= 8;
+                    break;
+                    
+                case 'confirm_password':
+                    const passwordValue = document.getElementById('password').value;
+                    isValid = value === passwordValue;
+                    break;
+            }
+            
+            // Update field appearance
+            if (isValid) {
+                field.classList.add('is-valid');
+                if (validationIcon) {
+                    validationIcon.querySelector('.valid-icon').style.display = 'block';
+                }
+            } else {
+                field.classList.add('is-invalid');
+                if (validationIcon) {
+                    validationIcon.querySelector('.invalid-icon').style.display = 'block';
+                }
+            }
+        }
+        
+        // Prevent form submission if terms are not agreed to
+        const form = document.getElementById('registerForm');
+        const termsCheckbox = document.getElementById('termsAgreement');
+        
+        form.addEventListener('submit', function(e) {
+            if (!termsCheckbox.checked) {
+                e.preventDefault();
+                alert('You must agree to the terms before creating an account.');
+                termsCheckbox.focus();
+                return false;
+            }
+            
+            // Show loading state
+            const submitButton = document.getElementById('submitButton');
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Creating Account...';
+        });
+        
+        // Input formatting - prevent spaces in numeric fields
+        const idField = document.getElementById('id_number');
+        const phoneField = document.getElementById('phone');
+        
+        [idField, phoneField].forEach(field => {
+            if (field) {
+                field.addEventListener('input', function() {
+                    // Remove any spaces and non-digit characters
+                    this.value = this.value.replace(/\s/g, '').replace(/\D/g, '');
+                    
+                    // Limit length
+                    if (this.id === 'id_number' && this.value.length > 13) {
+                        this.value = this.value.substring(0, 13);
+                    }
+                    if (this.id === 'phone' && this.value.length > 10) {
+                        this.value = this.value.substring(0, 10);
+                    }
+                });
+                
+                // Prevent paste with spaces
+                field.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                    const cleanedText = pastedText.replace(/\s/g, '').replace(/\D/g, '');
+                    
+                    if (this.id === 'id_number') {
+                        this.value = cleanedText.substring(0, 13);
+                    } else if (this.id === 'phone') {
+                        this.value = cleanedText.substring(0, 10);
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,783 @@
+{% extends "base.html" %}
+
+{% block title %}Utilities Payment - Nkuna Banking{% endblock %}
+
+{% block head %}
+<style>
+    .payment-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px 20px 0 0;
+        padding: 40px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .payment-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .service-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        margin: 0 auto 20px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .service-option {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        background: white;
+        border: 2px solid transparent;
+    }
+    
+    .service-option:hover {
+        transform: translateY(-5px);
+        border-color: #667eea;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+    }
+    
+    .service-option.active {
+        border-color: #667eea;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+    }
+    
+    .service-option .icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin: 0 auto 15px;
+    }
+    
+    .service-airtime .icon {
+        background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+        color: white;
+    }
+    
+    .service-data .icon {
+        background: linear-gradient(135deg, #2196F3 0%, #0D47A1 100%);
+        color: white;
+    }
+    
+    .service-electricity .icon {
+        background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+        color: white;
+    }
+    
+    .service-water .icon {
+        background: linear-gradient(135deg, #00BCD4 0%, #00838F 100%);
+        color: white;
+    }
+    
+    .input-group-modern {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .input-group-modern:focus-within {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .input-group-modern .input-group-text {
+        background: #f8fafc;
+        border: none;
+        color: #4a5568;
+        font-weight: 600;
+        padding: 16px 20px;
+    }
+    
+    .input-group-modern .form-control {
+        border: none;
+        padding: 16px;
+        font-size: 16px;
+        background: white;
+    }
+    
+    .input-group-modern .form-control:focus {
+        box-shadow: none;
+    }
+    
+    .quick-amounts {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+    
+    .quick-amount-btn {
+        padding: 8px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        color: #4a5568;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .quick-amount-btn:hover {
+        border-color: #667eea;
+        color: #667eea;
+        transform: translateY(-2px);
+    }
+    
+    .payment-summary {
+        background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+        border-radius: 15px;
+        padding: 25px;
+        border: 2px solid #e2e8f0;
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .summary-row:last-child {
+        border-bottom: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    
+    .summary-row.total {
+        border-top: 2px solid #e2e8f0;
+        margin-top: 10px;
+        padding-top: 15px;
+    }
+    
+    .balance-warning {
+        background: linear-gradient(135deg, #FFEAA7 0%, #FDCB6E 100%);
+        border-radius: 12px;
+        padding: 15px;
+        border-left: 5px solid #E17055;
+        display: none;
+        margin-top: 15px;
+    }
+    
+    .balance-warning.show {
+        display: block;
+        animation: slideIn 0.3s ease;
+    }
+    
+    .service-details {
+        background: white;
+        border-radius: 12px;
+        padding: 15px;
+        margin-top: 15px;
+        border-left: 4px solid #667eea;
+        display: none;
+    }
+    
+    .service-details.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+        from {
+            transform: translateY(-10px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    .limit-info {
+        font-size: 0.85rem;
+        color: #718096;
+        margin-top: 5px;
+    }
+    
+    .payment-method {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        border: 2px solid #e2e8f0;
+        margin-bottom: 20px;
+    }
+    
+    .payment-method .method-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+        margin-right: 15px;
+    }
+    
+    .payment-note {
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 12px;
+        padding: 20px;
+        border-left: 4px solid #667eea;
+        margin-top: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .payment-header {
+            padding: 30px 20px;
+        }
+        
+        .service-option {
+            padding: 15px 10px;
+        }
+        
+        .quick-amounts {
+            justify-content: center;
+        }
+        
+        .input-group-modern .input-group-text,
+        .input-group-modern .form-control {
+            padding: 14px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Safety Notice for Utilities -->
+    <div class="glass-card p-4 mb-4 border-start border-5 border-warning">
+        <div class="d-flex align-items-start">
+            <div class="me-3">
+                <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+            </div>
+            <div>
+                <h5 class="mb-2">Demo Payment Notice</h5>
+                <p class="mb-0 text-muted">This is a demonstration utility payment system. <strong class="text-danger">NO REAL MONEY</strong> will be deducted, and no actual services will be purchased. This simulates real payment flows for educational purposes only.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Payment Header -->
+            <div class="payment-header">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1 class="display-5 fw-bold mb-3">Utility Payments</h1>
+                        <p class="lead mb-0">Pay for airtime, data, electricity, and water bills instantly. Secure, fast, and convenient.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <div class="service-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <!-- Left Column: Service Selection & Form -->
+                <div class="col-lg-8">
+                    <div class="glass-card p-4 mb-4">
+                        <h3 class="mb-4"><i class="fas fa-sliders-h me-2"></i> Payment Details</h3>
+                        
+                        <form method="POST" action="{{ url_for('user.utilities') }}" id="paymentForm">
+                            {{ form.hidden_tag() }}
+                            
+                            <!-- Service Type Selection -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold mb-3">Select Service Type</label>
+                                <div class="row g-3">
+                                    <div class="col-6 col-md-3">
+                                        <div class="service-option service-airtime" data-service="airtime">
+                                            <div class="icon">
+                                                <i class="fas fa-phone"></i>
+                                            </div>
+                                            <h6 class="mb-1">Airtime</h6>
+                                            <small class="text-muted">All Networks</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <div class="service-option service-data" data-service="data">
+                                            <div class="icon">
+                                                <i class="fas fa-wifi"></i>
+                                            </div>
+                                            <h6 class="mb-1">Mobile Data</h6>
+                                            <small class="text-muted">All Networks</small>
+                                        </div>
+                                    </div>
+                                   
+                                   
+                                </div>
+                                {{ form.service_type(class="d-none", id="service_type") }}
+                                {% for error in form.service_type.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Account/Phone Number - FIXED: Flexible validation -->
+                            <div class="mb-4">
+                                <label for="account_number" class="form-label fw-semibold" id="account-label">
+                                    <i class="fas fa-hashtag me-2"></i>Account/Meter/Phone Number
+                                </label>
+                                <div class="input-group-modern">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-hashtag"></i>
+                                    </span>
+                                    {{ form.account_number(class="form-control", id="account_number", placeholder="Enter number") }}
+                                </div>
+                                <div class="text-muted small mt-2" id="account-help">
+                                    Enter phone number, meter number, or account number
+                                </div>
+                                {% for error in form.account_number.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Amount Input -->
+                            <div class="mb-4">
+                                <label for="amount" class="form-label fw-semibold">
+                                    <i class="fas fa-money-bill-wave me-2"></i>Amount (ZAR)
+                                </label>
+                                <div class="input-group-modern">
+                                    <span class="input-group-text">R</span>
+                                    {{ form.amount(class="form-control", id="amount", placeholder="Enter amount", min="1", max="5000", step="0.01") }}
+                                </div>
+                                <div class="limit-info">
+                                    Minimum: R1.00 • Maximum: R5,000.00
+                                </div>
+                                {% for error in form.amount.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                {% endfor %}
+                                
+                                <!-- Quick Amount Buttons -->
+                                <div class="quick-amounts">
+                                    <button type="button" class="quick-amount-btn" data-amount="10">R10</button>
+                                    <button type="button" class="quick-amount-btn" data-amount="20">R20</button>
+                                    <button type="button" class="quick-amount-btn" data-amount="50">R50</button>
+                                    <button type="button" class="quick-amount-btn" data-amount="100">R100</button>
+                                    <button type="button" class="quick-amount-btn" data-amount="200">R200</button>
+                                    <button type="button" class="quick-amount-btn" data-amount="500">R500</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Service-specific Details -->
+                            <div class="service-details" id="serviceDetails">
+                                <h6><i class="fas fa-info-circle me-2"></i>Service Information</h6>
+                                <div id="serviceDetailsContent">
+                                    <p class="mb-0 text-muted">Select a service type above for specific information.</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Balance Warning -->
+                            <div class="balance-warning" id="balanceWarning">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-3 fa-lg" style="color: #E17055;"></i>
+                                    <div>
+                                        <strong>Insufficient Balance:</strong> You need <span id="requiredAmount">R0.00</span> but only have {{ format_currency(current_user.balance) }} available.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Submit Button -->
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn-gradient-primary btn-lg py-3" id="submitBtn">
+                                    <i class="fas fa-paper-plane me-2"></i> Pay Now
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Payment Security Note -->
+                    <div class="payment-note">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-shield-alt fa-2x" style="color: #667eea;"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-2">Payment Security</h5>
+                                <p class="mb-0 text-muted">All utility payments are processed securely. You can undo this transaction within <strong>{{ config.UNDO_MINUTES }} minutes</strong> from your transaction history if you change your mind.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column: Payment Summary -->
+                <div class="col-lg-4">
+                    <div class="glass-card p-4 sticky-top" style="top: 20px;">
+                        <h3 class="mb-4"><i class="fas fa-receipt me-2"></i> Payment Summary</h3>
+                        
+                        <!-- Current Balance -->
+                        <div class="payment-method">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="method-icon">
+                                    <i class="fas fa-wallet"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Available Balance</h6>
+                                    <div class="amount-display" style="font-size: 1.5rem;">
+                                        {{ format_currency(current_user.balance) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Summary -->
+                        <div class="payment-summary">
+                            <div class="summary-row">
+                                <span class="text-muted">Service Amount:</span>
+                                <span class="fw-semibold" id="summaryAmount">R0.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="text-muted">Service Fee:</span>
+                                <span class="fw-semibold text-primary" id="summaryFee">{{ format_currency(config.UTILITY_FEE_FIXED) }}</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="text-muted">Payment Method:</span>
+                                <span class="fw-semibold">Account Balance</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>Total Deduction:</span>
+                                <span class="text-danger fw-bold" id="summaryTotal">R{{ config.UTILITY_FEE_FIXED }}</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>New Balance:</span>
+                                <span class="text-success fw-bold" id="summaryNewBalance">{{ format_currency(current_user.balance) }}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Undo Information -->
+                        <div class="mt-4 pt-4 border-top">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="fas fa-undo fa-2x" style="color: #4CAF50;"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">15-Minute Undo</h6>
+                                    <p class="text-muted small mb-0">You can undo this payment within {{ config.UNDO_MINUTES }} minutes from your transaction history.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Processing Time -->
+                        <div class="mt-3">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="fas fa-clock fa-2x" style="color: #2196F3;"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Instant Processing</h6>
+                                    <p class="text-muted small mb-0">Most payments are processed instantly. Some may take up to 2 minutes.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const currentBalance = {{ current_user.balance }};
+    const serviceFee = {{ config.UTILITY_FEE_FIXED }};
+    const maxAmount = 5000;
+    const minAmount = 1;
+    
+    // Elements
+    const serviceOptions = document.querySelectorAll('.service-option');
+    const serviceTypeInput = document.getElementById('service_type');
+    const accountInput = document.getElementById('account_number');
+    const accountLabel = document.getElementById('account-label');
+    const accountHelp = document.getElementById('account-help');
+    const amountInput = document.getElementById('amount');
+    const serviceDetails = document.getElementById('serviceDetails');
+    const serviceDetailsContent = document.getElementById('serviceDetailsContent');
+    const balanceWarning = document.getElementById('balanceWarning');
+    const requiredAmountSpan = document.getElementById('requiredAmount');
+    const submitBtn = document.getElementById('submitBtn');
+    const quickAmountBtns = document.querySelectorAll('.quick-amount-btn');
+    
+    // Summary elements
+    const summaryAmount = document.getElementById('summaryAmount');
+    const summaryTotal = document.getElementById('summaryTotal');
+    const summaryNewBalance = document.getElementById('summaryNewBalance');
+    
+    // Service information - FIXED: No strict validation for electricity/water
+    const serviceInfo = {
+        'airtime': {
+            label: 'Phone Number',
+            help: 'Enter the 10-digit phone number (e.g., 0812345678)',
+            placeholder: '0812345678',
+            details: 'Airtime will be sent instantly to the specified phone number. Works with all major networks: Vodacom, MTN, Cell C, and Telkom.'
+        },
+        'data': {
+            label: 'Phone Number',
+            help: 'Enter the 10-digit phone number (e.g., 0812345678)',
+            placeholder: '0812345678',
+            details: 'Data bundles will be sent instantly. Specify if you need specific bundles in the reference field above.'
+        },
+        'electricity': {
+            label: 'Meter Number',
+            help: 'Enter your electricity meter number (any format accepted)',
+            placeholder: 'e.g., MTR123456789 or 12345678901',
+            details: 'Electricity tokens will be generated and sent via SMS. Ensure your meter number is correct to avoid delays.'
+        },
+        'water': {
+            label: 'Account Number',
+            help: 'Enter your municipal water account number (any format accepted)',
+            placeholder: 'e.g., WTR-12345-678 or 123456789',
+            details: 'Water bill payments will be processed within 24 hours. Keep your payment reference for tracking.'
+        }
+    };
+    
+    // Format currency function
+    function formatCurrency(amount) {
+        return 'R' + parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    }
+    
+    // Update payment summary
+    function updatePaymentSummary() {
+        const paymentAmount = parseFloat(amountInput.value) || 0;
+        const totalDeduction = paymentAmount + serviceFee;
+        const newBalance = currentBalance - totalDeduction;
+        
+        // Update summary display
+        summaryAmount.textContent = formatCurrency(paymentAmount);
+        summaryTotal.textContent = formatCurrency(totalDeduction);
+        summaryNewBalance.textContent = formatCurrency(newBalance);
+        
+        // Check if new balance is negative
+        if (newBalance < 0) {
+            summaryNewBalance.classList.remove('text-success');
+            summaryNewBalance.classList.add('text-danger');
+        } else {
+            summaryNewBalance.classList.remove('text-danger');
+            summaryNewBalance.classList.add('text-success');
+        }
+        
+        // Show/hide balance warning
+        if (paymentAmount > 0 && newBalance < 0) {
+            requiredAmountSpan.textContent = formatCurrency(totalDeduction);
+            balanceWarning.classList.add('show');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('disabled');
+        } else if (paymentAmount >= minAmount) {
+            balanceWarning.classList.remove('show');
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('disabled');
+        }
+    }
+    
+    // Update service type UI
+    function updateServiceType(service) {
+        // Update active class on service options
+        serviceOptions.forEach(option => {
+            if (option.dataset.service === service) {
+                option.classList.add('active');
+            } else {
+                option.classList.remove('active');
+            }
+        });
+        
+        // Update hidden input
+        serviceTypeInput.value = service;
+        
+        // Update form labels and help text
+        const info = serviceInfo[service];
+        accountLabel.innerHTML = `<i class="fas fa-${service === 'airtime' || service === 'data' ? 'mobile-alt' : 'hashtag'} me-2"></i>${info.label}`;
+        accountHelp.textContent = info.help;
+        accountInput.placeholder = info.placeholder;
+        
+        // Update service details
+        serviceDetailsContent.innerHTML = `<p class="mb-0">${info.details}</p>`;
+        serviceDetails.classList.add('show');
+        
+        // Remove any pattern/validation for electricity and water
+        if (service === 'airtime' || service === 'data') {
+            accountInput.pattern = '^[0-9]{10}$';
+            accountInput.title = 'Enter a 10-digit phone number';
+        } else {
+            accountInput.pattern = null;
+            accountInput.title = '';
+        }
+    }
+    
+    // Set quick amount
+    function setQuickAmount(amount) {
+        amountInput.value = amount;
+        amountInput.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    
+    // Event Listeners
+    serviceOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            updateServiceType(this.dataset.service);
+        });
+    });
+    
+    amountInput.addEventListener('input', function() {
+        // Validate amount range
+        const value = parseFloat(this.value) || 0;
+        
+        if (value > maxAmount) {
+            this.value = maxAmount;
+            showToast('Maximum amount is R5,000', 'warning');
+        } else if (value < 0) {
+            this.value = '';
+        }
+        
+        updatePaymentSummary();
+    });
+    
+    accountInput.addEventListener('input', function() {
+        // Prevent spaces in input
+        this.value = this.value.replace(/\s/g, '');
+        
+        // For phone numbers (airtime/data), allow only digits
+        if (serviceTypeInput.value === 'airtime' || serviceTypeInput.value === 'data') {
+            this.value = this.value.replace(/\D/g, '');
+        }
+        // For electricity and water, allow any characters (no validation)
+    });
+    
+    quickAmountBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            setQuickAmount(this.dataset.amount);
+        });
+    });
+    
+    // Form submission validation
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        const amount = parseFloat(amountInput.value) || 0;
+        const totalDeduction = amount + serviceFee;
+        
+        if (amount < minAmount) {
+            e.preventDefault();
+            showToast(`Minimum amount is R${minAmount.toFixed(2)}`, 'error');
+            return;
+        }
+        
+        if (amount > maxAmount) {
+            e.preventDefault();
+            showToast(`Maximum amount is R${maxAmount.toFixed(2)}`, 'error');
+            return;
+        }
+        
+        if (currentBalance < totalDeduction) {
+            e.preventDefault();
+            showToast('Insufficient balance for this payment', 'error');
+            return;
+        }
+        
+        if (!serviceTypeInput.value) {
+            e.preventDefault();
+            showToast('Please select a service type', 'error');
+            return;
+        }
+        
+        if (!accountInput.value.trim()) {
+            e.preventDefault();
+            showToast('Please enter account/phone number', 'error');
+            return;
+        }
+        
+        // Additional validation for airtime/data (must be 10 digits)
+        if (serviceTypeInput.value === 'airtime' || serviceTypeInput.value === 'data') {
+            if (!/^\d{10}$/.test(accountInput.value)) {
+                e.preventDefault();
+                showToast('Phone number must be exactly 10 digits for airtime and data', 'error');
+                return;
+            }
+        }
+        
+        // Show processing state
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Processing...';
+        submitBtn.disabled = true;
+    });
+    
+    // Toast notification function
+    function showToast(message, type = 'info') {
+        const existingToast = document.querySelector('.toast-notification');
+        if (existingToast) existingToast.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = `toast-notification alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            animation: slideInRight 0.3s ease;
+        `;
+        toast.innerHTML = `
+            <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : type === 'warning' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            if (toast.parentElement) toast.remove();
+        }, 5000);
+    }
+    
+    // Initialize
+    updateServiceType('airtime');
+    updatePaymentSummary();
+    
+    // Add CSS for toast animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+});
+</script>
+{% endblock %}

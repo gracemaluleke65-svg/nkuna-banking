@@ -1,0 +1,522 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | Nkuna Banking{% endblock %}
+
+{% block head %}
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+        border-radius: 20px;
+        color: white;
+        padding: 30px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .admin-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .admin-stats-card {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        height: 100%;
+    }
+    
+    .admin-stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+    }
+    
+    .stats-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+    
+    .stats-number {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 2.2rem;
+        background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .stats-label {
+        color: #718096;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+    
+    .recent-activity {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+    
+    .activity-item {
+        padding: 15px 0;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        font-size: 18px;
+    }
+    
+    .activity-details {
+        flex: 1;
+    }
+    
+    .activity-time {
+        color: #718096;
+        font-size: 0.85rem;
+    }
+    
+    .system-health {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+    
+    .health-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .health-item:last-child {
+        border-bottom: none;
+    }
+    
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .status-online {
+        background: rgba(72, 187, 120, 0.1);
+        color: #48BB78;
+    }
+    
+    .status-warning {
+        background: rgba(246, 173, 85, 0.1);
+        color: #F6AD55;
+    }
+    
+    .status-danger {
+        background: rgba(245, 101, 101, 0.1);
+        color: #F56565;
+    }
+    
+    .quick-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .quick-action-btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .quick-action-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-manage {
+        background: rgba(66, 153, 225, 0.1);
+        color: #4299E1;
+        border: 1px solid rgba(66, 153, 225, 0.2);
+    }
+    
+    .btn-manage:hover {
+        background: rgba(66, 153, 225, 0.2);
+        color: #4299E1;
+    }
+    
+    .btn-fees {
+        background: rgba(72, 187, 120, 0.1);
+        color: #48BB78;
+        border: 1px solid rgba(72, 187, 120, 0.2);
+    }
+    
+    .btn-fees:hover {
+        background: rgba(72, 187, 120, 0.2);
+        color: #48BB78;
+    }
+    
+    .btn-reverse {
+        background: rgba(245, 101, 101, 0.1);
+        color: #F56565;
+        border: 1px solid rgba(245, 101, 101, 0.2);
+    }
+    
+    .btn-reverse:hover {
+        background: rgba(245, 101, 101, 0.2);
+        color: #F56565;
+    }
+    
+    .admin-table {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .admin-table th {
+        background: #f7fafc;
+        font-weight: 600;
+        padding: 15px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .admin-table td {
+        padding: 15px;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: middle;
+    }
+    
+    .admin-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .admin-table tr:hover {
+        background: #f7fafc;
+    }
+    
+    @media (max-width: 768px) {
+        .admin-header {
+            padding: 20px;
+        }
+        
+        .stats-number {
+            font-size: 1.8rem;
+        }
+        
+        .quick-actions {
+            flex-direction: column;
+        }
+        
+        .quick-action-btn {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Admin Header -->
+    <div class="admin-header">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h1 class="h2 mb-2"><i class="fas fa-crown me-2"></i> Admin Dashboard</h1>
+                <p class="mb-0 opacity-75">System administration and monitoring panel</p>
+            </div>
+            <div class="text-end">
+                <div class="text-success mb-1">
+                    <i class="fas fa-circle me-2"></i>
+                    <span>System Online</span>
+                </div>
+                <div class="small opacity-75">
+                    {{ format_datetime(now) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="admin-stats-card">
+                <div class="stats-icon" style="background: rgba(66, 153, 225, 0.1); color: #4299E1;">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stats-number">{{ stats.total_users|default(0) }}</div>
+                <div class="stats-label">Total Users</div>
+                <div class="quick-actions">
+                    <a href="{{ url_for('admin.users') }}" class="quick-action-btn btn-manage">
+                        <i class="fas fa-cog"></i> Manage
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6">
+            <div class="admin-stats-card">
+                <div class="stats-icon" style="background: rgba(72, 187, 120, 0.1); color: #48BB78;">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="stats-number">{{ stats.total_transactions|default(0) }}</div>
+                <div class="stats-label">Transactions</div>
+                <div class="quick-actions">
+                    <a href="{{ url_for('admin.transactions') }}" class="quick-action-btn btn-manage">
+                        <i class="fas fa-search"></i> View All
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6">
+            <div class="admin-stats-card">
+                <div class="stats-icon" style="background: rgba(246, 173, 85, 0.1); color: #F6AD55;">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stats-number">{{ format_currency(stats.total_balance|default(0)) }}</div>
+                <div class="stats-label">Total Balance</div>
+                <div class="quick-actions">
+                    <a href="{{ url_for('admin.users') }}" class="quick-action-btn btn-manage">
+                        <i class="fas fa-chart-line"></i> View Report
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6">
+            <div class="admin-stats-card">
+                <div class="stats-icon" style="background: rgba(159, 122, 234, 0.1); color: #9F7AEA;">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="stats-number">{{ format_currency(stats.total_fees|default(0)) }}</div>
+                <div class="stats-label">Total Fees</div>
+                <div class="quick-actions">
+                    <a href="{{ url_for('admin.fees') }}" class="quick-action-btn btn-fees">
+                        <i class="fas fa-cog"></i> Configure
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Transactions -->
+        <div class="col-lg-8">
+            <div class="recent-activity">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="h5 mb-0"><i class="fas fa-history me-2"></i> Recent Transactions</h3>
+                    <a href="{{ url_for('admin.transactions') }}" class="btn btn-sm btn-outline-primary">
+                        View All <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                
+                {% if stats.recent_transactions %}
+                <div class="admin-table">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Type</th>
+                                    <th>User</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in stats.recent_transactions %}
+                                <tr>
+                                    <td class="text-muted">#{{ transaction.id }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if transaction.transaction_type == 'deposit' %}success{% elif transaction.transaction_type == 'transfer' %}primary{% elif transaction.transaction_type == 'utility' %}warning{% elif transaction.transaction_type == 'reversal' %}danger{% else %}secondary{% endif %}">
+                                            {{ transaction.transaction_type|title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if transaction.user %}
+                                        <a href="{{ url_for('admin.user_detail', user_id=transaction.user_id) }}" class="text-decoration-none">
+                                            {{ transaction.user.full_name }}
+                                        </a>
+                                        {% else %}
+                                        <span class="text-muted">Deleted User</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="{{ 'text-success' if transaction.is_incoming() else 'text-danger' }} fw-semibold">
+                                            {{ transaction.get_amount_display() }}
+                                        </span>
+                                    </td>
+                                    <td class="text-muted small">{{ format_datetime(transaction.created_at) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-exchange-alt fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No recent transactions</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- System Health -->
+        <div class="col-lg-4">
+            <div class="system-health">
+                <h3 class="h5 mb-4"><i class="fas fa-heartbeat me-2"></i> System Health</h3>
+                
+                <div class="health-item">
+                    <div>
+                        <div class="fw-semibold">Database Connection</div>
+                        <div class="small text-muted">PostgreSQL connection status</div>
+                    </div>
+                    <span class="status-badge status-online">Online</span>
+                </div>
+                
+                <div class="health-item">
+                    <div>
+                        <div class="fw-semibold">System Load</div>
+                        <div class="small text-muted">CPU and Memory usage</div>
+                    </div>
+                    <span class="status-badge status-online">Normal</span>
+                </div>
+                
+                <div class="health-item">
+                    <div>
+                        <div class="fw-semibold">Transaction Queue</div>
+                        <div class="small text-muted">Pending transactions</div>
+                    </div>
+                    <span class="status-badge status-online">0 Pending</span>
+                </div>
+                
+                <div class="health-item">
+                    <div>
+                        <div class="fw-semibold">Security Status</div>
+                        <div class="small text-muted">Firewall & Protection</div>
+                    </div>
+                    <span class="status-badge status-online">Active</span>
+                </div>
+                
+                <div class="health-item">
+                    <div>
+                        <div class="fw-semibold">Backup Status</div>
+                        <div class="small text-muted">Last backup: Today 02:00</div>
+                    </div>
+                    <span class="status-badge status-online">Complete</span>
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('admin.fees') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-cog me-2"></i> Configure Fees
+                    </a>
+                    <a href="{{ url_for('admin.users') }}" class="btn btn-outline-success">
+                        <i class="fas fa-users me-2"></i> Manage Users
+                    </a>
+                    <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#forceReverseModal">
+                        <i class="fas fa-undo me-2"></i> Force Reverse Transaction
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Force Reverse Modal -->
+<div class="modal fade" id="forceReverseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-undo me-2"></i> Force Reverse Transaction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin.force_reverse', transaction_id=0) }}" id="reverseForm">
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Warning:</strong> This action will immediately reverse any transaction. Use with extreme caution.
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Transaction ID</label>
+                        <input type="number" class="form-control" name="transaction_id" placeholder="Enter transaction ID" required>
+                        <div class="form-text">Enter the transaction ID you want to reverse</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Reason</label>
+                        <textarea class="form-control" name="reason" rows="3" placeholder="Enter reason for reversal..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Force Reverse</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update reverse form action with transaction ID
+        const reverseForm = document.getElementById('reverseForm');
+        const transactionIdInput = document.querySelector('input[name="transaction_id"]');
+        
+        if (reverseForm && transactionIdInput) {
+            reverseForm.addEventListener('submit', function(e) {
+                const transactionId = transactionIdInput.value;
+                const action = reverseForm.getAttribute('action');
+                reverseForm.setAttribute('action', action.replace('0', transactionId));
+            });
+        }
+        
+        // Auto-refresh dashboard every 30 seconds
+        setTimeout(() => {
+            window.location.reload();
+        }, 30000);
+    });
+</script>
+{% endblock %}

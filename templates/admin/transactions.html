@@ -1,0 +1,525 @@
+{% extends "base.html" %}
+
+{% block title %}Transaction History | Admin Dashboard{% endblock %}
+
+{% block head %}
+<style>
+    .transactions-header {
+        background: linear-gradient(135deg, #9F7AEA 0%, #805AD5 100%);
+        border-radius: 20px;
+        color: white;
+        padding: 30px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .transactions-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .filters-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+    }
+    
+    .type-counts {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+    
+    .type-count {
+        padding: 8px 15px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+    
+    .type-count:hover {
+        transform: translateY(-2px);
+    }
+    
+    .type-count.active {
+        border-color: currentColor;
+    }
+    
+    .transaction-row {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .transaction-row:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        border-color: #e2e8f0;
+    }
+    
+    .transaction-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin-right: 15px;
+    }
+    
+    .transaction-details {
+        flex: 1;
+    }
+    
+    .transaction-type {
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 5px;
+    }
+    
+    .transaction-meta {
+        color: #718096;
+        font-size: 0.85rem;
+        margin-bottom: 5px;
+    }
+    
+    .transaction-reference {
+        font-size: 0.9rem;
+        color: #4a5568;
+    }
+    
+    .transaction-amount {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 1.2rem;
+        text-align: right;
+    }
+    
+    .transaction-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    
+    .action-btn-small {
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .btn-force-reverse {
+        background: rgba(245, 101, 101, 0.1);
+        color: #F56565;
+        border: 1px solid rgba(245, 101, 101, 0.2);
+    }
+    
+    .btn-force-reverse:hover {
+        background: rgba(245, 101, 101, 0.2);
+        color: #F56565;
+    }
+    
+    .btn-view-user {
+        background: rgba(66, 153, 225, 0.1);
+        color: #4299E1;
+        border: 1px solid rgba(66, 153, 225, 0.2);
+    }
+    
+    .btn-view-user:hover {
+        background: rgba(66, 153, 225, 0.2);
+        color: #4299E1;
+    }
+    
+    .status-badge {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+    
+    .status-completed {
+        background: rgba(72, 187, 120, 0.1);
+        color: #48BB78;
+    }
+    
+    .status-reversed {
+        background: rgba(245, 101, 101, 0.1);
+        color: #F56565;
+    }
+    
+    .status-pending {
+        background: rgba(246, 173, 85, 0.1);
+        color: #F6AD55;
+    }
+    
+    .pagination-container {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .no-transactions {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+    }
+    
+    .no-transactions-icon {
+        font-size: 4rem;
+        color: #e2e8f0;
+        margin-bottom: 20px;
+    }
+    
+    .date-inputs {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .date-inputs .form-control {
+        flex: 1;
+    }
+    
+    @media (max-width: 768px) {
+        .transactions-header {
+            padding: 20px;
+        }
+        
+        .date-inputs {
+            flex-direction: column;
+        }
+        
+        .type-counts {
+            justify-content: center;
+        }
+        
+        .transaction-row {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .transaction-icon {
+            margin: 0 auto 15px;
+        }
+        
+        .transaction-amount {
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .transaction-actions {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Transactions Header -->
+    <div class="transactions-header">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h1 class="h2 mb-2"><i class="fas fa-exchange-alt me-2"></i> Transaction History</h1>
+                <p class="mb-0 opacity-75">Monitor and manage all system transactions</p>
+            </div>
+            <div class="text-end">
+                <div class="display-6 mb-1">{{ transactions.total }}</div>
+                <div class="small opacity-75">Total Transactions</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="filters-card">
+        <form method="GET" action="{{ url_for('admin.transactions') }}">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Transaction Type</label>
+                    <select name="type" class="form-select">
+                        <option value="">All Types</option>
+                        <option value="deposit" {% if request.args.get('type') == 'deposit' %}selected{% endif %}>Deposit</option>
+                        <option value="transfer" {% if request.args.get('type') == 'transfer' %}selected{% endif %}>Transfer</option>
+                        <option value="utility" {% if request.args.get('type') == 'utility' %}selected{% endif %}>Utility</option>
+                        <option value="goal_deposit" {% if request.args.get('type') == 'goal_deposit' %}selected{% endif %}>Goal Deposit</option>
+                        <option value="goal_withdrawal" {% if request.args.get('type') == 'goal_withdrawal' %}selected{% endif %}>Goal Withdrawal</option>
+                        <option value="reversal" {% if request.args.get('type') == 'reversal' %}selected{% endif %}>Reversal</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-4">
+                    <label class="form-label">Date Range</label>
+                    <div class="date-inputs">
+                        <input type="date" class="form-control" name="start_date" value="{{ request.args.get('start_date', '') }}">
+                        <span class="text-muted">to</span>
+                        <input type="date" class="form-control" name="end_date" value="{{ request.args.get('end_date', '') }}">
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="completed" {% if request.args.get('status') == 'completed' %}selected{% endif %}>Completed</option>
+                        <option value="reversed" {% if request.args.get('status') == 'reversed' %}selected{% endif %}>Reversed</option>
+                        <option value="pending" {% if request.args.get('status') == 'pending' %}selected{% endif %}>Pending</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-2 d-flex align-items-end">
+                    <div class="d-flex gap-2 w-100">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="fas fa-filter me-2"></i> Filter
+                        </button>
+                        <a href="{{ url_for('admin.transactions') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Type Counts -->
+        <div class="mt-4">
+            <label class="form-label mb-2">Quick Filters</label>
+            <div class="type-counts">
+                <a href="{{ url_for('admin.transactions') }}" class="type-count" style="background: rgba(66, 153, 225, 0.1); color: #4299E1;">
+                    All ({{ transactions.total }})
+                </a>
+                {% for ttype, count in type_counts.items() %}
+                <a href="{{ url_for('admin.transactions', type=ttype) }}" 
+                   class="type-count {% if request.args.get('type') == ttype %}active{% endif %}"
+                   style="background: rgba(66, 153, 225, 0.1); color: #4299E1;">
+                    {{ ttype|replace('_', ' ')|title }} ({{ count }})
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Transactions List -->
+    {% if transactions.items %}
+    <div class="transactions-list">
+        {% for transaction in transactions.items %}
+        <div class="transaction-row d-flex align-items-start">
+            <div class="transaction-icon" style="
+                {% if transaction.transaction_type == 'deposit' %}
+                background: rgba(72, 187, 120, 0.1); color: #48BB78;
+                {% elif transaction.transaction_type == 'transfer' %}
+                background: rgba(66, 153, 225, 0.1); color: #4299E1;
+                {% elif transaction.transaction_type == 'utility' %}
+                background: rgba(246, 173, 85, 0.1); color: #F6AD55;
+                {% elif transaction.transaction_type == 'reversal' %}
+                background: rgba(245, 101, 101, 0.1); color: #F56565;
+                {% else %}
+                background: rgba(159, 122, 234, 0.1); color: #9F7AEA;
+                {% endif %}
+            ">
+                {% if transaction.transaction_type == 'deposit' %}
+                <i class="fas fa-money-bill-wave"></i>
+                {% elif transaction.transaction_type == 'transfer' %}
+                <i class="fas fa-exchange-alt"></i>
+                {% elif transaction.transaction_type == 'utility' %}
+                <i class="fas fa-bolt"></i>
+                {% elif transaction.transaction_type == 'reversal' %}
+                <i class="fas fa-undo"></i>
+                {% else %}
+                <i class="fas fa-bullseye"></i>
+                {% endif %}
+            </div>
+            
+            <div class="transaction-details">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="transaction-type">
+                            {{ transaction.transaction_type|replace('_', ' ')|title }}
+                            <span class="status-badge status-{{ transaction.status }}">
+                                {{ transaction.status|title }}
+                            </span>
+                        </div>
+                        <div class="transaction-meta">
+                            <span class="me-3">
+                                <i class="fas fa-user me-1"></i>
+                                {% if transaction.user %}
+                                <a href="{{ url_for('admin.user_detail', user_id=transaction.user_id) }}" class="text-decoration-none">
+                                    {{ transaction.user.full_name }}
+                                </a>
+                                {% else %}
+                                <span class="text-muted">Deleted User</span>
+                                {% endif %}
+                            </span>
+                            <span>
+                                <i class="fas fa-clock me-1"></i>
+                                {{ format_datetime(transaction.created_at) }}
+                            </span>
+                        </div>
+                        {% if transaction.reference %}
+                        <div class="transaction-reference">
+                            <i class="fas fa-sticky-note me-1"></i> {{ transaction.reference }}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Additional Details -->
+                        {% if transaction.recipient_account_number %}
+                        <div class="transaction-meta mt-2">
+                            <span class="me-3">
+                                <i class="fas fa-arrow-right me-1"></i>
+                                To: {{ transaction.recipient_name|default(transaction.recipient_account_number) }}
+                            </span>
+                        </div>
+                        {% endif %}
+                        
+                        {% if transaction.sender_account_number and not transaction.is_sender %}
+                        <div class="transaction-meta mt-1">
+                            <span>
+                                <i class="fas fa-arrow-left me-1"></i>
+                                From: {{ transaction.sender_name|default(transaction.sender_account_number) }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="transaction-amount {% if transaction.is_incoming() %}text-success{% else %}text-danger{% endif %}">
+                        {{ transaction.get_amount_display() }}
+                        {% if transaction.admin_fee > 0 %}
+                        <div class="small text-muted">
+                            Fee: {{ format_currency(transaction.admin_fee) }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="transaction-actions">
+                    <span class="text-muted small">
+                        Transaction ID: #{{ transaction.id }}
+                        {% if transaction.original_transaction_id %}
+                        | Original: #{{ transaction.original_transaction_id }}
+                        {% endif %}
+                    </span>
+                    
+                    <div class="ms-auto">
+                        {% if transaction.status != 'reversed' and transaction.transaction_type != 'reversal' %}
+                        <form method="POST" action="{{ url_for('admin.force_reverse', transaction_id=transaction.id) }}" class="d-inline">
+                            <button type="submit" class="action-btn-small btn-force-reverse" 
+                                    onclick="return confirm('Are you sure you want to force reverse transaction #{{ transaction.id }}? This action cannot be undone.')">
+                                <i class="fas fa-undo me-1"></i> Force Reverse
+                            </button>
+                        </form>
+                        {% endif %}
+                        
+                        {% if transaction.user %}
+                        <a href="{{ url_for('admin.user_detail', user_id=transaction.user_id) }}" class="action-btn-small btn-view-user">
+                            <i class="fas fa-user me-1"></i> View User
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    <div class="pagination-container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="page-info text-muted">
+                Showing {{ transactions.page * transactions.per_page - transactions.per_page + 1 }} to 
+                {{ min(transactions.page * transactions.per_page, transactions.total) }} of {{ transactions.total }} transactions
+            </div>
+            
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    {% if transactions.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.transactions', page=transactions.prev_num, type=request.args.get('type'), start_date=request.args.get('start_date'), end_date=request.args.get('end_date'), status=request.args.get('status')) }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-chevron-left"></i></span>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in transactions.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            {% if page_num == transactions.page %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin.transactions', page=page_num, type=request.args.get('type'), start_date=request.args.get('start_date'), end_date=request.args.get('end_date'), status=request.args.get('status')) }}">
+                                    {{ page_num }}
+                                </a>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if transactions.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.transactions', page=transactions.next_num, type=request.args.get('type'), start_date=request.args.get('start_date'), end_date=request.args.get('end_date'), status=request.args.get('status')) }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-chevron-right"></i></span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- No Transactions Found -->
+    <div class="no-transactions">
+        <div class="no-transactions-icon">
+            <i class="fas fa-exchange-alt"></i>
+        </div>
+        <h4 class="mb-3">No Transactions Found</h4>
+        <p class="text-muted mb-4">
+            {% if request.args.get('type') or request.args.get('start_date') or request.args.get('end_date') %}
+            No transactions match your filter criteria. Try adjusting your filters.
+            {% else %}
+            There are no transactions in the system yet.
+            {% endif %}
+        </p>
+        {% if request.args.get('type') or request.args.get('start_date') or request.args.get('end_date') %}
+        <a href="{{ url_for('admin.transactions') }}" class="btn btn-primary">
+            <i class="fas fa-redo me-2"></i> Clear Filters
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

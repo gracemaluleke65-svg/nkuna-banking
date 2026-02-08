@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: nkuna-banking
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    # CRITICAL FIX: Removed eventlet (causes crashes), using sync worker with 1 worker only
+    # Free tier has limited memory; multiple workers cause memory exhaustion
+    startCommand: gunicorn --worker-class sync -w 1 --threads 2 --timeout 120 --keep-alive 2 --max-requests 500 --max-requests-jitter 50 app:app
+    healthCheckPath: /health
+    healthCheckPort: 10000
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.12
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nkuna-banking-db
+          property: connectionString
+      # CRITICAL: Set WEB_CONCURRENCY to 1 to prevent multiple workers
+      - key: WEB_CONCURRENCY
+        value: 1
+
+databases:
+  - name: nkuna-banking-db
+    databaseName: nkunabank
+    user: nkunabank_user
+    plan: free

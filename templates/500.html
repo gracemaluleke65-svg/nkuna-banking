@@ -1,0 +1,557 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error - Nkuna Banking{% endblock %}
+
+{% block head %}
+<style>
+    .error-container {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 0;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+    
+    .error-card {
+        background: white;
+        border-radius: 20px;
+        padding: 50px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 700px;
+        width: 100%;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .error-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(135deg, #F56565 0%, #E53E3E 100%);
+    }
+    
+    .error-number {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 800;
+        font-size: 8rem;
+        background: linear-gradient(135deg, #F56565 0%, #E53E3E 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+        margin-bottom: 20px;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .error-number::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(135deg, #F56565 0%, #E53E3E 100%);
+        border-radius: 2px;
+    }
+    
+    .error-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 2.5rem;
+        color: #2d3748;
+        margin-bottom: 20px;
+    }
+    
+    .error-message {
+        font-size: 1.1rem;
+        color: #718096;
+        margin-bottom: 40px;
+        line-height: 1.6;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .error-status {
+        background: linear-gradient(135deg, rgba(245, 101, 101, 0.1) 0%, rgba(229, 62, 62, 0.1) 100%);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 30px 0;
+        border-left: 4px solid #F56565;
+    }
+    
+    .error-status h6 {
+        color: #F56565;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+    
+    .error-status p {
+        color: #718096;
+        font-size: 0.95rem;
+        margin-bottom: 0;
+    }
+    
+    .error-links {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 40px;
+    }
+    
+    .error-link {
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-width: 160px;
+    }
+    
+    .btn-primary-gradient {
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);
+        color: white;
+        border: none;
+    }
+    
+    .btn-primary-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 102, 204, 0.3);
+        color: white;
+    }
+    
+    .btn-outline-primary-custom {
+        background: rgba(255, 255, 255, 0.1);
+        color: #0066CC;
+        border: 2px solid #0066CC;
+        backdrop-filter: blur(10px);
+    }
+    
+    .btn-outline-primary-custom:hover {
+        background: #0066CC;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 102, 204, 0.2);
+    }
+    
+    .btn-outline-warning-custom {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ED8936;
+        border: 2px solid #ED8936;
+        backdrop-filter: blur(10px);
+    }
+    
+    .btn-outline-warning-custom:hover {
+        background: #ED8936;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(237, 137, 54, 0.2);
+    }
+    
+    .error-illustration {
+        margin: 40px auto;
+        width: 200px;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(245, 101, 101, 0.1) 0%, rgba(229, 62, 62, 0.1) 100%);
+        border-radius: 50%;
+        animation: pulse 2s ease-in-out infinite;
+        position: relative;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { 
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(245, 101, 101, 0.4);
+        }
+        50% { 
+            transform: scale(1.05);
+            box-shadow: 0 0 0 20px rgba(245, 101, 101, 0);
+        }
+    }
+    
+    .error-illustration i {
+        font-size: 5rem;
+        color: #F56565;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .error-illustration::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(245, 101, 101, 0.2) 0%, rgba(229, 62, 62, 0.2) 100%);
+        animation: rotate 10s linear infinite;
+    }
+    
+    @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .suggestions {
+        background: #f7fafc;
+        border-radius: 12px;
+        padding: 25px;
+        margin-top: 30px;
+        text-align: left;
+    }
+    
+    .suggestions-title {
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #2d3748;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .suggestions-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .suggestions-list li {
+        padding: 8px 0;
+        border-bottom: 1px solid #e2e8f0;
+        color: #718096;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .suggestions-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .suggestions-list li i {
+        color: #F56565;
+        margin-top: 3px;
+        flex-shrink: 0;
+    }
+    
+    .technical-details {
+        background: #2d3748;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 30px;
+        color: white;
+        text-align: left;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    .technical-details summary {
+        cursor: pointer;
+        font-weight: 600;
+        color: #cbd5e0;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .technical-details pre {
+        margin: 0;
+        color: #a0aec0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+    
+    .contact-support {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
+    }
+    
+    .contact-support a {
+        color: #0066CC;
+        text-decoration: none;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .contact-support a:hover {
+        color: #0047AB;
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .error-card {
+            padding: 30px 20px;
+        }
+        
+        .error-number {
+            font-size: 6rem;
+        }
+        
+        .error-title {
+            font-size: 2rem;
+        }
+        
+        .error-links {
+            flex-direction: column;
+        }
+        
+        .error-link {
+            width: 100%;
+        }
+        
+        .error-illustration {
+            width: 150px;
+            height: 150px;
+        }
+        
+        .error-illustration i {
+            font-size: 4rem;
+        }
+        
+        .contact-support {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-card">
+        <div class="error-illustration">
+            <i class="fas fa-server"></i>
+        </div>
+        
+        <div class="error-number">500</div>
+        
+        <h1 class="error-title">Internal Server Error</h1>
+        
+        <p class="error-message">
+            We apologize for the inconvenience. Our servers encountered an unexpected error while processing your request. 
+            Our technical team has been notified and is working to resolve the issue.
+        </p>
+        
+        <div class="error-status">
+            <h6><i class="fas fa-exclamation-triangle me-2"></i> Service Status</h6>
+            <p>We're experiencing temporary technical difficulties. Please try again in a few moments.</p>
+        </div>
+        
+        <div class="suggestions">
+            <h6 class="suggestions-title">
+                <i class="fas fa-tools"></i>
+                What you can do while we fix this:
+            </h6>
+            <ul class="suggestions-list">
+                <li>
+                    <i class="fas fa-redo"></i>
+                    <div>
+                        <strong>Refresh the page</strong> - Sometimes a simple refresh resolves temporary issues
+                    </div>
+                </li>
+                <li>
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <strong>Wait a few minutes</strong> - Our team is actively working to restore service
+                    </div>
+                </li>
+                <li>
+                    <i class="fas fa-home"></i>
+                    <div>
+                        <strong>Return to homepage</strong> - Navigate back to the main banking dashboard
+                    </div>
+                </li>
+                <li>
+                    <i class="fas fa-history"></i>
+                    <div>
+                        <strong>Try again later</strong> - The issue may be resolved within the next hour
+                    </div>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="error-links">
+            <a href="{{ url_for('index') }}" class="error-link btn-primary-gradient">
+                <i class="fas fa-home"></i> Go to Homepage
+            </a>
+            
+            <a href="javascript:history.back()" class="error-link btn-outline-primary-custom">
+                <i class="fas fa-arrow-left"></i> Go Back
+            </a>
+            
+            <button onclick="window.location.reload()" class="error-link btn-outline-warning-custom">
+                <i class="fas fa-redo"></i> Refresh Page
+            </button>
+        </div>
+        
+        <div class="technical-details">
+            <details>
+                <summary>
+                    <i class="fas fa-code"></i>
+                    Technical Details (For Support)
+                </summary>
+                <pre>
+Error Code: 500 - Internal Server Error
+Timestamp: {{ now.strftime('%Y-%m-%d %H:%M:%S UTC') }}
+Request ID: {{ request.headers.get('X-Request-ID', 'Not Available') }}
+User Agent: {{ request.headers.get('User-Agent', 'Not Available')|truncate(100) }}
+Path: {{ request.path }}
+Method: {{ request.method }}
+                
+Note: This error has been logged and our development team has been alerted.
+If the issue persists, please contact support with the information above.
+                </pre>
+            </details>
+        </div>
+        
+        <div class="contact-support">
+            <span class="text-muted">
+                <i class="fas fa-life-ring me-2"></i>
+                Need immediate assistance?
+            </span>
+            <a href="mailto:support@nkunabank.co.za">
+                <i class="fas fa-envelope"></i>
+                Contact Support
+            </a>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top">
+            <p class="text-muted small mb-0">
+                <i class="fas fa-shield-alt me-2"></i>
+                <strong>Security Note:</strong> No personal or financial data is at risk. This is a technical error affecting service availability.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-refresh button functionality
+        const refreshBtn = document.querySelector('button[onclick*="reload"]');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', function() {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Refreshing...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
+            });
+        }
+        
+        // Add retry functionality for forms or specific actions
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.addEventListener('click', function() {
+                    // Check if form was submitted before the error
+                    if (sessionStorage.getItem('form_submission_attempted')) {
+                        sessionStorage.removeItem('form_submission_attempted');
+                        alert('Please wait a moment before trying again. The server may still be processing your previous request.');
+                        return false;
+                    }
+                    
+                    sessionStorage.setItem('form_submission_attempted', 'true');
+                    setTimeout(() => {
+                        sessionStorage.removeItem('form_submission_attempted');
+                    }, 10000); // Clear after 10 seconds
+                });
+            }
+        });
+        
+        // Show a notification if this page loaded after a form submission
+        if (performance.navigation.type === performance.navigation.TYPE_RELOAD) {
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-info alert-dismissible fade show mt-3';
+            notification.innerHTML = `
+                <i class="fas fa-info-circle me-2"></i>
+                You refreshed the page after encountering an error. If you were submitting a form, your data may have been lost.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const errorCard = document.querySelector('.error-card');
+            if (errorCard) {
+                errorCard.insertBefore(notification, errorCard.firstChild);
+                
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(notification);
+                    bsAlert.close();
+                }, 8000);
+            }
+        }
+        
+        // Check if we should automatically retry the request
+        const retryCount = sessionStorage.getItem('error_retry_count') || 0;
+        if (retryCount < 2) {
+            setTimeout(() => {
+                console.log(`Auto-retry attempt ${parseInt(retryCount) + 1} of 2`);
+                sessionStorage.setItem('error_retry_count', parseInt(retryCount) + 1);
+                
+                // Try to fetch the homepage to check if service is restored
+                fetch('{{ url_for("index") }}', { method: 'HEAD' })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('Service appears to be restored. Redirecting...');
+                            sessionStorage.removeItem('error_retry_count');
+                            window.location.href = '{{ url_for("index") }}';
+                        }
+                    })
+                    .catch(() => {
+                        console.log('Service not yet restored');
+                    });
+            }, 30000); // Wait 30 seconds before retry
+        } else {
+            sessionStorage.removeItem('error_retry_count');
+        }
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + R to refresh
+            if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+                e.preventDefault();
+                window.location.reload();
+            }
+            
+            // Escape to go back
+            if (e.key === 'Escape') {
+                history.back();
+            }
+            
+            // Home key to go to homepage
+            if (e.key === 'Home') {
+                window.location.href = '{{ url_for("index") }}';
+            }
+        });
+    });
+</script>
+{% endblock %}

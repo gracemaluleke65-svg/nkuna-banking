@@ -1,0 +1,860 @@
+{% extends "base.html" %}
+
+{% block title %}Transfer Money - Nkuna Banking{% endblock %}
+
+{% block head %}
+<style>
+    .transfer-hero {
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);
+        border-radius: 0 0 30px 30px;
+        padding: 40px 0;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .transfer-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .transfer-card {
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 25px;
+        box-shadow: 0 20px 60px rgba(0, 102, 204, 0.15);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+    }
+    
+    .transfer-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 30px 80px rgba(0, 102, 204, 0.25);
+    }
+    
+    .form-section {
+        padding: 40px;
+    }
+    
+    .summary-section {
+        background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+        padding: 40px;
+        border-left: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .input-group-custom {
+        border-radius: 15px;
+        overflow: hidden;
+        border: 2px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+    
+    .input-group-custom:focus-within {
+        border-color: #0066CC;
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    }
+    
+    .input-group-custom .form-control {
+        border: none;
+        padding: 16px 20px;
+        font-size: 16px;
+        background: transparent;
+    }
+    
+    .input-group-custom .form-control:focus {
+        box-shadow: none;
+    }
+    
+    .input-group-custom .btn {
+        border-radius: 0;
+        border-left: 2px solid #e2e8f0;
+        padding: 16px 25px;
+        font-weight: 600;
+        background: linear-gradient(135deg, #00D4AA 0%, #009688 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .input-group-custom .btn:hover {
+        background: linear-gradient(135deg, #00C29A 0%, #008877 100%);
+    }
+    
+    .amount-input-wrapper {
+        position: relative;
+    }
+    
+    .currency-symbol {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-weight: 600;
+        color: #4a5568;
+        font-size: 16px;
+        z-index: 3;
+    }
+    
+    .amount-input {
+        padding-left: 40px !important;
+        font-size: 18px;
+        font-weight: 500;
+    }
+    
+    .quick-amounts {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .quick-amount-btn {
+        padding: 8px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        background: white;
+        color: #4a5568;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .quick-amount-btn:hover {
+        border-color: #0066CC;
+        background: rgba(0, 102, 204, 0.05);
+        color: #0066CC;
+    }
+    
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .summary-item:last-child {
+        border-bottom: none;
+    }
+    
+    .summary-label {
+        color: #718096;
+        font-weight: 500;
+    }
+    
+    .summary-value {
+        font-weight: 600;
+        color: #2d3748;
+    }
+    
+    .total-deduction {
+        font-size: 1.2rem;
+        color: #e53e3e;
+        font-weight: 700;
+    }
+    
+    .new-balance {
+        font-size: 1.2rem;
+        color: #38a169;
+        font-weight: 700;
+    }
+    
+    .verification-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 500;
+        margin-top: 10px;
+    }
+    
+    .verification-success {
+        background: rgba(72, 187, 120, 0.1);
+        color: #38a169;
+        border: 2px solid rgba(72, 187, 120, 0.2);
+    }
+    
+    .verification-warning {
+        background: rgba(237, 137, 54, 0.1);
+        color: #dd6b20;
+        border: 2px solid rgba(237, 137, 54, 0.2);
+    }
+    
+    .verification-error {
+        background: rgba(245, 101, 101, 0.1);
+        color: #e53e3e;
+        border: 2px solid rgba(245, 101, 101, 0.2);
+    }
+    
+    .transfer-btn {
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);
+        border: none;
+        color: white;
+        padding: 18px 40px;
+        border-radius: 15px;
+        font-weight: 600;
+        font-size: 18px;
+        transition: all 0.3s ease;
+        width: 100%;
+        box-shadow: 0 8px 25px rgba(0, 102, 204, 0.3);
+    }
+    
+    .transfer-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 35px rgba(0, 102, 204, 0.4);
+    }
+    
+    .transfer-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+    
+    .safety-tips {
+        background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+        border-radius: 15px;
+        padding: 25px;
+        border-left: 5px solid #F59E0B;
+        margin-top: 40px;
+    }
+    
+    .tip-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+    
+    .tip-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .tip-icon {
+        color: #D97706;
+        font-size: 18px;
+        margin-top: 2px;
+    }
+    
+    @media (max-width: 768px) {
+        .form-section, .summary-section {
+            padding: 25px;
+        }
+        
+        .transfer-hero {
+            padding: 30px 0;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .input-group-custom .btn {
+            padding: 12px 20px;
+        }
+        
+        .quick-amounts {
+            justify-content: center;
+        }
+    }
+    
+    @media (max-width: 992px) {
+        .summary-section {
+            border-left: none;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+    }
+    
+    /* Animation for verification */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    .verification-pulse {
+        animation: pulse 0.5s ease;
+    }
+    
+    /* Fee breakdown tooltip */
+    .fee-tooltip {
+        position: relative;
+        display: inline-block;
+        cursor: help;
+    }
+    
+    .fee-tooltip .tooltip-text {
+        visibility: hidden;
+        width: 250px;
+        background: #2d3748;
+        color: white;
+        text-align: center;
+        border-radius: 10px;
+        padding: 10px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0;
+        transition: opacity 0.3s;
+        font-size: 14px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .fee-tooltip:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+    }
+    
+    .fee-tooltip .tooltip-text::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #2d3748 transparent transparent transparent;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Transfer Hero Section -->
+<section class="transfer-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="text-white mb-3" style="font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 2.5rem;">
+                    <i class="fas fa-share-square me-3"></i>Secure Money Transfer
+                </h1>
+                <p class="text-white mb-0" style="opacity: 0.9; font-size: 1.1rem;">
+                    Send money instantly to any Nkuna Banking account with our 15-minute undo protection.
+                    Your funds are always secure with bank-level encryption.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="d-inline-block text-center bg-white rounded-pill px-4 py-2 shadow">
+                    <small class="text-muted d-block">Current Balance</small>
+                    <span class="fw-bold fs-4" style="color: #0066CC;">{{ format_currency(current_user.balance) }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Safety Notice -->
+<div class="container mb-4">
+    <div class="alert alert-warning border-0 rounded-3 shadow-sm" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle fa-2x me-3" style="color: #D97706;"></i>
+            <div>
+                <h5 class="alert-heading mb-1">Safety Reminder</h5>
+                <p class="mb-0">
+                    This is a <strong>demonstration banking application</strong>. No real money is involved. 
+                    You will never be asked for real banking details or cards. Always verify recipient details before transferring.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Transfer Form -->
+<div class="container">
+    <div class="transfer-card">
+        <div class="row g-0">
+            <!-- Form Section -->
+            <div class="col-lg-7">
+                <div class="form-section">
+                    <form method="POST" action="{{ url_for('user.transfer') }}" id="transfer-form">
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Account Number Field -->
+                        <div class="mb-4">
+                            <label for="account_number" class="form-label fw-semibold mb-3">
+                                <i class="fas fa-user-circle me-2"></i>Recipient Account Number
+                            </label>
+                            <div class="input-group-custom">
+                                {{ form.account_number(
+                                    class="form-control" + (" is-invalid" if form.account_number.errors else ""),
+                                    placeholder="Enter 10-digit account number",
+                                    id="account_number",
+                                    maxlength="10"
+                                ) }}
+                                <button type="button" class="btn" id="verify-btn">
+                                    <i class="fas fa-check-circle me-2"></i>Verify
+                                </button>
+                            </div>
+                            {% for error in form.account_number.errors %}
+                                <div class="invalid-feedback d-block mt-2">
+                                    <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+                                </div>
+                            {% endfor %}
+                            
+                            <!-- Verification Result -->
+                            <div id="account-verification-result" class="mt-3"></div>
+                        </div>
+                        
+                        <!-- Amount Field -->
+                        <div class="mb-4">
+                            <label for="amount" class="form-label fw-semibold mb-3">
+                                <i class="fas fa-money-bill-wave me-2"></i>Transfer Amount
+                            </label>
+                            <div class="amount-input-wrapper">
+                                <span class="currency-symbol">R</span>
+                                {{ form.amount(
+                                    class="form-control amount-input" + (" is-invalid" if form.amount.errors else ""),
+                                    placeholder="0.00",
+                                    id="amount"
+                                ) }}
+                            </div>
+                            {% for error in form.amount.errors %}
+                                <div class="invalid-feedback d-block mt-2">
+                                    <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+                                </div>
+                            {% endfor %}
+                            
+                            <!-- Quick Amounts -->
+                            <div class="quick-amounts">
+                                <button type="button" class="quick-amount-btn" data-amount="50">R50</button>
+                                <button type="button" class="quick-amount-btn" data-amount="100">R100</button>
+                                <button type="button" class="quick-amount-btn" data-amount="500">R500</button>
+                                <button type="button" class="quick-amount-btn" data-amount="1000">R1,000</button>
+                                <button type="button" class="quick-amount-btn" data-amount="5000">R5,000</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Reference Field -->
+                        <div class="mb-4">
+                            <label for="reference" class="form-label fw-semibold mb-3">
+                                <i class="fas fa-sticky-note me-2"></i>Reference (Optional)
+                            </label>
+                            {{ form.reference(
+                                class="form-control",
+                                placeholder="e.g., For services rendered, Monthly allowance, etc.",
+                                id="reference"
+                            ) }}
+                            <small class="text-muted mt-2 d-block">
+                                This reference will appear on both your statement and the recipient's statement.
+                            </small>
+                        </div>
+                        
+                        <!-- Fee Information -->
+                        <div class="alert alert-info border-0 rounded-3 mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle me-3 fa-lg" style="color: #0066CC;"></i>
+                                <div>
+                                    <h6 class="alert-heading mb-1">Transfer Fee</h6>
+                                    <p class="mb-0">
+                                        Transfer fee: <strong>{{ config.TRANSFER_FEE_PERCENT }}%</strong> 
+                                        (min {{ format_currency(config.MIN_TRANSFER_FEE) }}, 
+                                        max {{ format_currency(config.MAX_TRANSFER_FEE) }})
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <button type="submit" class="transfer-btn" id="transfer-btn">
+                            <i class="fas fa-paper-plane me-2"></i>Transfer Money
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Summary Section -->
+            <div class="col-lg-5">
+                <div class="summary-section h-100">
+                    <h4 class="mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        <i class="fas fa-receipt me-2"></i>Transfer Summary
+                    </h4>
+                    
+                    <div class="summary-item">
+                        <span class="summary-label">Current Balance</span>
+                        <span class="summary-value" id="current-balance-display">{{ format_currency(current_user.balance) }}</span>
+                    </div>
+                    
+                    <div class="summary-item">
+                        <span class="summary-label">Recipient</span>
+                        <span class="summary-value" id="recipient-name-display" style="color: #718096;">
+                            <i class="fas fa-user-clock me-1"></i>Not verified
+                        </span>
+                    </div>
+                    
+                    <div class="summary-item">
+                        <span class="summary-label">Transfer Amount</span>
+                        <span class="summary-value" id="transfer-amount-display">R0.00</span>
+                    </div>
+                    
+                    <div class="summary-item">
+                        <span class="summary-label">
+                            <span class="fee-tooltip">
+                                Transfer Fee
+                                <i class="fas fa-question-circle ms-1" style="font-size: 0.9em; color: #718096;"></i>
+                                <span class="tooltip-text">
+                                    Transfer fee calculation:<br>
+                                    • {{ config.TRANSFER_FEE_PERCENT }}% of transfer amount<br>
+                                    • Minimum: {{ format_currency(config.MIN_TRANSFER_FEE) }}<br>
+                                    • Maximum: {{ format_currency(config.MAX_TRANSFER_FEE) }}
+                                </span>
+                            </span>
+                        </span>
+                        <span class="summary-value" id="fee-display">R0.00</span>
+                    </div>
+                    
+                    <div class="summary-item pt-3 border-top-2" style="border-top: 2px solid #e2e8f0;">
+                        <span class="summary-label fw-bold">Total Deduction</span>
+                        <span class="summary-value total-deduction" id="total-deduction-display">R0.00</span>
+                    </div>
+                    
+                    <div class="summary-item pb-3">
+                        <span class="summary-label fw-bold">New Balance</span>
+                        <span class="summary-value new-balance" id="new-balance-display">{{ format_currency(current_user.balance) }}</span>
+                    </div>
+                    
+                    <!-- 15-Minute Undo Feature -->
+                    <div class="alert alert-success border-0 rounded-3 mt-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-undo me-3 fa-lg" style="color: #38a169;"></i>
+                            <div>
+                                <h6 class="alert-heading mb-1">15-Minute Undo Protection</h6>
+                                <p class="mb-0">
+                                    You can undo this transfer within <strong>{{ config.UNDO_MINUTES }} minutes</strong> 
+                                    if you change your mind or notice an error.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Safety Tips -->
+    <div class="safety-tips">
+        <h5 class="mb-4" style="color: #92400E;">
+            <i class="fas fa-shield-alt me-2"></i>Transfer Safety Tips
+        </h5>
+        
+        <div class="tip-item">
+            <i class="fas fa-check-circle tip-icon"></i>
+            <div>
+                <strong>Always verify recipient details</strong> - Use the verify button to confirm the account holder's name before transferring.
+            </div>
+        </div>
+        
+        <div class="tip-item">
+            <i class="fas fa-check-circle tip-icon"></i>
+            <div>
+                <strong>Double-check amounts</strong> - Verify the transfer amount and fee before confirming the transaction.
+            </div>
+        </div>
+        
+        <div class="tip-item">
+            <i class="fas fa-check-circle tip-icon"></i>
+            <div>
+                <strong>Use meaningful references</strong> - Add a clear reference to help identify the transaction later.
+            </div>
+        </div>
+        
+        <div class="tip-item">
+            <i class="fas fa-check-circle tip-icon"></i>
+            <div>
+                <strong>Remember the undo window</strong> - You have {{ config.UNDO_MINUTES }} minutes to undo accidental transfers.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const accountInput = document.getElementById('account_number');
+    const amountInput = document.getElementById('amount');
+    const verifyBtn = document.getElementById('verify-btn');
+    const verificationResult = document.getElementById('account-verification-result');
+    const recipientNameDisplay = document.getElementById('recipient-name-display');
+    const transferBtn = document.getElementById('transfer-btn');
+    const currentBalance = {{ current_user.balance }};
+    
+    let verifiedName = null;
+    let transferFee = 0;
+    let isAccountVerified = false;
+    
+    // Prevent spaces in account number field
+    accountInput.addEventListener('input', function() {
+        this.value = this.value.replace(/\s/g, '').replace(/\D/g, '');
+        
+        // Clear verification when account number changes
+        verifiedName = null;
+        isAccountVerified = false;
+        verificationResult.innerHTML = '';
+        recipientNameDisplay.innerHTML = '<i class="fas fa-user-clock me-1"></i>Not verified';
+        recipientNameDisplay.style.color = '#718096';
+    });
+    
+    // Format currency display
+    function formatCurrency(amount) {
+        return 'R' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    }
+    
+    // Calculate transfer fee
+    function calculateFee(amount) {
+        const feePercent = {{ config.TRANSFER_FEE_PERCENT }};
+        const minFee = {{ config.MIN_TRANSFER_FEE }};
+        const maxFee = {{ config.MAX_TRANSFER_FEE }};
+        
+        let fee = (feePercent / 100) * amount;
+        fee = Math.max(minFee, Math.min(fee, maxFee));
+        return parseFloat(fee.toFixed(2));
+    }
+    
+    // Update summary display
+    function updateDisplay() {
+        const transferAmount = parseFloat(amountInput.value) || 0;
+        transferFee = calculateFee(transferAmount);
+        const totalDeduction = transferAmount + transferFee;
+        const newBalance = currentBalance - totalDeduction;
+        
+        // Update displays
+        document.getElementById('current-balance-display').textContent = formatCurrency(currentBalance);
+        document.getElementById('transfer-amount-display').textContent = formatCurrency(transferAmount);
+        document.getElementById('fee-display').textContent = formatCurrency(transferFee);
+        document.getElementById('total-deduction-display').textContent = formatCurrency(totalDeduction);
+        document.getElementById('new-balance-display').textContent = formatCurrency(newBalance);
+        
+        // Color coding for new balance
+        const newBalanceElement = document.getElementById('new-balance-display');
+        if (transferAmount > 0) {
+            if (newBalance < 0) {
+                newBalanceElement.style.color = '#e53e3e';
+                transferBtn.disabled = true;
+                transferBtn.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Insufficient Funds';
+            } else {
+                newBalanceElement.style.color = '#38a169';
+                transferBtn.disabled = false;
+                transferBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Transfer Money';
+            }
+        } else {
+            newBalanceElement.style.color = '#38a169';
+            transferBtn.disabled = false;
+            transferBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Transfer Money';
+        }
+    }
+    
+    // Verify account number
+    verifyBtn.addEventListener('click', function() {
+        const accountNumber = accountInput.value.trim();
+        
+        if (!accountNumber || accountNumber.length !== 10 || !/^\d+$/.test(accountNumber)) {
+            verificationResult.innerHTML = `
+                <div class="verification-badge verification-error verification-pulse">
+                    <i class="fas fa-exclamation-circle"></i>
+                    Please enter a valid 10-digit account number
+                </div>
+            `;
+            recipientNameDisplay.innerHTML = '<i class="fas fa-times-circle me-1"></i>Invalid format';
+            recipientNameDisplay.style.color = '#e53e3e';
+            isAccountVerified = false;
+            return;
+        }
+        
+        // Show loading state
+        verificationResult.innerHTML = `
+            <div class="verification-badge verification-warning verification-pulse">
+                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                <span>Verifying account...</span>
+            </div>
+        `;
+        
+        // Disable verify button during verification
+        verifyBtn.disabled = true;
+        verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Verifying...';
+        
+        // Call verification API
+        fetch('/verify_account_api', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ account_number: accountNumber })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                verifiedName = data.full_name;
+                isAccountVerified = true;
+                
+                verificationResult.innerHTML = `
+                    <div class="verification-badge verification-success verification-pulse">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <strong>Account Verified!</strong><br>
+                            <small>This account belongs to: ${data.full_name}</small>
+                        </div>
+                    </div>
+                `;
+                
+                recipientNameDisplay.innerHTML = `<i class="fas fa-user-check me-1"></i>${data.full_name}`;
+                recipientNameDisplay.style.color = '#38a169';
+            } else {
+                verifiedName = null;
+                isAccountVerified = false;
+                
+                verificationResult.innerHTML = `
+                    <div class="verification-badge verification-error verification-pulse">
+                        <i class="fas fa-times-circle"></i>
+                        ${data.message}
+                    </div>
+                `;
+                
+                recipientNameDisplay.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>Account not found';
+                recipientNameDisplay.style.color = '#dd6b20';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            verifiedName = null;
+            isAccountVerified = false;
+            
+            verificationResult.innerHTML = `
+                <div class="verification-badge verification-error verification-pulse">
+                    <i class="fas fa-wifi"></i>
+                    Verification failed. Please try again.
+                </div>
+            `;
+            
+            recipientNameDisplay.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>Verification failed';
+            recipientNameDisplay.style.color = '#718096';
+        })
+        .finally(() => {
+            // Re-enable verify button
+            verifyBtn.disabled = false;
+            verifyBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i>Verify';
+        });
+    });
+    
+    // Quick amount buttons
+    document.querySelectorAll('.quick-amount-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const amount = this.getAttribute('data-amount');
+            amountInput.value = amount;
+            updateDisplay();
+            
+            // Visual feedback
+            this.style.borderColor = '#0066CC';
+            this.style.backgroundColor = 'rgba(0, 102, 204, 0.1)';
+            this.style.color = '#0066CC';
+            
+            // Reset other buttons
+            document.querySelectorAll('.quick-amount-btn').forEach(btn => {
+                if (btn !== this) {
+                    btn.style.borderColor = '#e2e8f0';
+                    btn.style.backgroundColor = 'white';
+                    btn.style.color = '#4a5568';
+                }
+            });
+        });
+    });
+    
+    // Update display on amount input
+    amountInput.addEventListener('input', updateDisplay);
+    
+    // Form submission with validation
+    document.getElementById('transfer-form').addEventListener('submit', function(e) {
+        const transferAmount = parseFloat(amountInput.value) || 0;
+        const totalDeduction = transferAmount + transferFee;
+        const accountNumber = accountInput.value.trim();
+        
+        // Basic validations
+        if (transferAmount <= 0) {
+            e.preventDefault();
+            showToast('Please enter a valid amount.', 'error');
+            amountInput.focus();
+            return;
+        }
+        
+        if (!accountNumber || accountNumber.length !== 10) {
+            e.preventDefault();
+            showToast('Please enter a valid 10-digit account number.', 'error');
+            accountInput.focus();
+            return;
+        }
+        
+        if (totalDeduction > currentBalance) {
+            e.preventDefault();
+            showToast('Insufficient balance for this transfer.', 'error');
+            return;
+        }
+        
+        // Check if account is verified
+        if (!isAccountVerified) {
+            const confirmTransfer = confirm(
+                `⚠️ WARNING: Account ${accountNumber} is not verified.\n\n` +
+                `Do you want to proceed with the transfer without verification?\n\n` +
+                `Amount: ${formatCurrency(transferAmount)}\n` +
+                `Fee: ${formatCurrency(transferFee)}\n` +
+                `Total: ${formatCurrency(totalDeduction)}`
+            );
+            
+            if (!confirmTransfer) {
+                e.preventDefault();
+                verifyBtn.focus();
+                return;
+            }
+        }
+        
+        // Confirmation message
+        let confirmMessage = `Transfer ${formatCurrency(transferAmount)} to account ${accountNumber}?`;
+        
+        if (verifiedName) {
+            confirmMessage += `\n\nRecipient: ${verifiedName}`;
+        }
+        
+        confirmMessage += `\nFee: ${formatCurrency(transferFee)}`;
+        confirmMessage += `\nTotal: ${formatCurrency(totalDeduction)}`;
+        
+        if (!confirm(confirmMessage)) {
+            e.preventDefault();
+        } else {
+            // Show loading state on button
+            transferBtn.disabled = true;
+            transferBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+        }
+    });
+    
+    // Helper function to show toast messages
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        toast.style.cssText = `
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        `;
+        toast.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 5000);
+    }
+    
+    // Initial display update
+    updateDisplay();
+});
+</script>
+{% endblock %}

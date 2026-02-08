@@ -1,0 +1,423 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users | Admin Dashboard{% endblock %}
+
+{% block head %}
+<style>
+    .users-header {
+        background: linear-gradient(135deg, #4299E1 0%, #3182ce 100%);
+        border-radius: 20px;
+        color: white;
+        padding: 30px;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .users-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .search-box {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+    }
+    
+    .search-input-group {
+        position: relative;
+    }
+    
+    .search-input-group .form-control {
+        padding-left: 45px;
+        border-radius: 10px;
+        border: 2px solid #e2e8f0;
+        height: 50px;
+    }
+    
+    .search-input-group .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #718096;
+        z-index: 4;
+    }
+    
+    .user-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .user-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        border-color: #4299E1;
+    }
+    
+    .user-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: bold;
+        color: white;
+        margin-right: 15px;
+    }
+    
+    .user-info h5 {
+        margin-bottom: 5px;
+    }
+    
+    .user-info p {
+        color: #718096;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+    
+    .user-stats {
+        display: flex;
+        gap: 15px;
+        margin-top: 15px;
+    }
+    
+    .stat-item {
+        text-align: center;
+        flex: 1;
+    }
+    
+    .stat-number {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #2d3748;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+        color: #718096;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .user-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 15px;
+    }
+    
+    .action-btn {
+        flex: 1;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-view {
+        background: rgba(66, 153, 225, 0.1);
+        color: #4299E1;
+        border: 1px solid rgba(66, 153, 225, 0.2);
+    }
+    
+    .btn-view:hover {
+        background: rgba(66, 153, 225, 0.2);
+        color: #4299E1;
+    }
+    
+    .btn-toggle {
+        background: rgba(72, 187, 120, 0.1);
+        color: #48BB78;
+        border: 1px solid rgba(72, 187, 120, 0.2);
+    }
+    
+    .btn-toggle:hover {
+        background: rgba(72, 187, 120, 0.2);
+        color: #48BB78;
+    }
+    
+    .btn-toggle.inactive {
+        background: rgba(245, 101, 101, 0.1);
+        color: #F56565;
+        border: 1px solid rgba(245, 101, 101, 0.2);
+    }
+    
+    .btn-toggle.inactive:hover {
+        background: rgba(245, 101, 101, 0.2);
+        color: #F56565;
+    }
+    
+    .status-badge {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-active {
+        background: rgba(72, 187, 120, 0.1);
+        color: #48BB78;
+    }
+    
+    .status-inactive {
+        background: rgba(245, 101, 101, 0.1);
+        color: #F56565;
+    }
+    
+    .status-admin {
+        background: rgba(159, 122, 234, 0.1);
+        color: #9F7AEA;
+    }
+    
+    .pagination-container {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .page-info {
+        color: #718096;
+        font-size: 0.9rem;
+    }
+    
+    .no-users {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    
+    .no-users-icon {
+        font-size: 4rem;
+        color: #e2e8f0;
+        margin-bottom: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .users-header {
+            padding: 20px;
+        }
+        
+        .user-stats {
+            flex-wrap: wrap;
+        }
+        
+        .user-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Users Header -->
+    <div class="users-header">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h1 class="h2 mb-2"><i class="fas fa-users me-2"></i> User Management</h1>
+                <p class="mb-0 opacity-75">Manage all system users and their accounts</p>
+            </div>
+            <div class="text-end">
+                <div class="display-6 mb-1">{{ users.total }}</div>
+                <div class="small opacity-75">Total Users</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-box">
+        <form method="GET" action="{{ url_for('admin.users') }}">
+            <div class="row align-items-end">
+                <div class="col-md-8">
+                    <div class="search-input-group">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="form-control" name="search" placeholder="Search users by name, email, or account number..." value="{{ search }}">
+                    </div>
+                </div>
+                <div class="col-md-4 mt-2 mt-md-0">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="fas fa-search me-2"></i> Search
+                        </button>
+                        <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Users Grid -->
+    {% if users.items %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for user in users.items %}
+        <div class="col">
+            <div class="user-card">
+                <div class="d-flex align-items-start">
+                    <div class="user-avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        {{ user.full_name[0]|upper }}
+                    </div>
+                    <div class="user-info flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="mb-0">{{ user.full_name }}</h5>
+                            <div>
+                                {% if user.is_admin %}
+                                <span class="status-badge status-admin">Admin</span>
+                                {% elif user.is_active %}
+                                <span class="status-badge status-active">Active</span>
+                                {% else %}
+                                <span class="status-badge status-inactive">Inactive</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <p class="mb-1">
+                            <i class="fas fa-envelope me-1"></i> {{ user.email }}
+                        </p>
+                        <p class="mb-0">
+                            <i class="fas fa-id-card me-1"></i> {{ user.account_number }}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="user-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">{{ format_currency(user.balance) }}</div>
+                        <div class="stat-label">Balance</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{ user.transactions|length }}</div>
+                        <div class="stat-label">Transactions</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{ user.goals|length }}</div>
+                        <div class="stat-label">Goals</div>
+                    </div>
+                </div>
+                
+                <div class="user-actions">
+                    <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="action-btn btn-view">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                    
+                    {% if not user.is_admin %}
+                    <form method="POST" action="{{ url_for('admin.toggle_user_status', user_id=user.id) }}" class="d-inline flex-grow-1">
+                        <button type="submit" class="action-btn btn-toggle {% if not user.is_active %}inactive{% endif %} w-100">
+                            {% if user.is_active %}
+                            <i class="fas fa-toggle-on"></i> Deactivate
+                            {% else %}
+                            <i class="fas fa-toggle-off"></i> Activate
+                            {% endif %}
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    <div class="pagination-container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="page-info">
+                Showing {{ users.page * users.per_page - users.per_page + 1 }} to 
+                {{ min(users.page * users.per_page, users.total) }} of {{ users.total }} users
+            </div>
+            
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    {% if users.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.users', page=users.prev_num, search=search) }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-chevron-left"></i></span>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            {% if page_num == users.page %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin.users', page=page_num, search=search) }}">
+                                    {{ page_num }}
+                                </a>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if users.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin.users', page=users.next_num, search=search) }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-chevron-right"></i></span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- No Users Found -->
+    <div class="no-users">
+        <div class="no-users-icon">
+            <i class="fas fa-user-slash"></i>
+        </div>
+        <h4 class="mb-3">No Users Found</h4>
+        <p class="text-muted mb-4">
+            {% if search %}
+            No users found matching "{{ search }}". Try a different search term.
+            {% else %}
+            There are no users in the system yet.
+            {% endif %}
+        </p>
+        {% if search %}
+        <a href="{{ url_for('admin.users') }}" class="btn btn-primary">
+            <i class="fas fa-redo me-2"></i> Clear Search
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

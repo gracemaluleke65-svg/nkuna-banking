@@ -1,0 +1,862 @@
+{% extends "base.html" %}
+
+{% block title %}Financial Goals - Track & Achieve Your Dreams | Nkuna Banking{% endblock %}
+
+{% block head %}
+<style>
+    .goals-section {
+        background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+        border-radius: 20px;
+        padding: 40px;
+        margin: 20px 0;
+    }
+    
+    .goal-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border: 2px solid transparent;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .goal-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        border-color: rgba(0, 102, 204, 0.2);
+    }
+    
+    .goal-card.completed {
+        border-left: 5px solid #00D4AA;
+    }
+    
+    .goal-card.in-progress {
+        border-left: 5px solid #0066CC;
+    }
+    
+    .goal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+    
+    .goal-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: #1a202c;
+    }
+    
+    .goal-status {
+        background: linear-gradient(135deg, #00D4AA 0%, #009688 100%);
+        color: white;
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .goal-status.in-progress {
+        background: linear-gradient(135deg, #FFD166 0%, #FFB142 100%);
+    }
+    
+    .progress-container {
+        margin: 25px 0;
+    }
+    
+    .progress-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .progress-percentage {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .progress-bar-goal {
+        height: 12px;
+        background: #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        border-radius: 10px;
+        background: linear-gradient(90deg, #0066CC 0%, #00D4AA 100%);
+        transition: width 1s ease-in-out;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            rgba(255, 255, 255, 0.3) 50%, 
+            transparent 100%);
+        animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+    
+    .goal-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin: 25px 0;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 15px;
+        background: rgba(0, 102, 204, 0.05);
+        border-radius: 12px;
+        border: 1px solid rgba(0, 102, 204, 0.1);
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+        color: #4a5568;
+        margin-bottom: 5px;
+        display: block;
+    }
+    
+    .stat-value {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #1a202c;
+    }
+    
+    .stat-value.remaining {
+        color: #FF6B6B;
+    }
+    
+    .goal-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 25px;
+    }
+    
+    .goal-btn {
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .goal-btn.deposit {
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3);
+    }
+    
+    .goal-btn.deposit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 102, 204, 0.4);
+    }
+    
+    .goal-btn.withdraw {
+        background: white;
+        color: #0066CC;
+        border: 2px solid #0066CC;
+    }
+    
+    .goal-btn.withdraw:hover {
+        background: rgba(0, 102, 204, 0.1);
+        transform: translateY(-3px);
+    }
+    
+    .goal-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+    
+    .goal-btn:disabled:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
+    
+    .create-goal-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        height: 100%;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .create-goal-card:hover {
+        border-color: rgba(0, 212, 170, 0.3);
+        box-shadow: 0 20px 40px rgba(0, 212, 170, 0.15);
+    }
+    
+    .create-goal-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+        color: #1a202c;
+        position: relative;
+    }
+    
+    .create-goal-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(135deg, #00D4AA 0%, #009688 100%);
+        border-radius: 2px;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .form-control-custom {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .form-control-custom:focus {
+        outline: none;
+        border-color: #0066CC;
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    }
+    
+    .input-group-custom {
+        display: flex;
+        align-items: center;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .input-group-custom:focus-within {
+        border-color: #0066CC;
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    }
+    
+    .input-group-custom span {
+        padding: 14px 18px;
+        background: #f8fafc;
+        border-right: 2px solid #e2e8f0;
+        font-weight: 600;
+        color: #4a5568;
+    }
+    
+    .input-group-custom input {
+        flex: 1;
+        border: none;
+        padding: 14px 18px;
+        font-size: 16px;
+        background: transparent;
+    }
+    
+    .input-group-custom input:focus {
+        outline: none;
+    }
+    
+    .tips-section {
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #e2e8f0;
+    }
+    
+    .tips-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        color: #2d3748;
+    }
+    
+    .tip-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+    
+    .tip-icon {
+        width: 24px;
+        height: 24px;
+        background: linear-gradient(135deg, #FFD166 0%, #FFB142 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 12px;
+        flex-shrink: 0;
+    }
+    
+    .tip-text {
+        color: #4a5568;
+        line-height: 1.5;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    
+    .empty-icon {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 30px;
+        font-size: 48px;
+        color: #718096;
+    }
+    
+    .empty-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 1.8rem;
+        color: #2d3748;
+        margin-bottom: 15px;
+    }
+    
+    .empty-description {
+        color: #718096;
+        max-width: 400px;
+        margin: 0 auto 30px;
+        line-height: 1.6;
+    }
+    
+    .goal-stats-summary {
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);
+        border-radius: 20px;
+        padding: 30px;
+        color: white;
+        margin-top: 40px;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .stat-summary-value {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 5px;
+    }
+    
+    .stat-summary-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+    
+    .modal-custom .modal-content {
+        border-radius: 20px;
+        border: none;
+        overflow: hidden;
+    }
+    
+    .modal-custom .modal-header {
+        background: linear-gradient(135deg, #0066CC 0%, #0047AB 100%);
+        color: white;
+        border-bottom: none;
+        padding: 25px 30px;
+    }
+    
+    .modal-custom .modal-title {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+    }
+    
+    .modal-custom .modal-body {
+        padding: 30px;
+    }
+    
+    .modal-custom .modal-footer {
+        border-top: 1px solid #e2e8f0;
+        padding: 20px 30px;
+    }
+    
+    .modal-custom .btn-close {
+        filter: brightness(0) invert(1);
+    }
+    
+    @media (max-width: 768px) {
+        .goals-section {
+            padding: 25px 15px;
+        }
+        
+        .goal-card {
+            padding: 20px;
+        }
+        
+        .goal-stats {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .goal-actions {
+            grid-template-columns: 1fr;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .create-goal-card {
+            padding: 25px 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Safety Reminder -->
+<div class="container mt-4">
+    <div class="glass-card border-warning border-2 p-3 mb-4">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-info-circle fa-2x me-3" style="color: #f39c12;"></i>
+            <div>
+                <h6 class="mb-1"><strong>Goal Safety Notice:</strong></h6>
+                <p class="mb-0">All goal deposits and withdrawals are made using demonstration funds only. No real money is involved. This feature is designed to help you practice financial planning in a safe environment.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <!-- Left Column: Create New Goal -->
+        <div class="col-lg-4 mb-4">
+            <div class="create-goal-card">
+                <h2 class="create-goal-title">Create New Goal</h2>
+                
+                <form method="POST" action="{{ url_for('user.goals') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="form-group">
+                        <label for="goal_name" class="form-label">Goal Name</label>
+                        {{ form.goal_name(class="form-control-custom" + (" is-invalid" if form.goal_name.errors else ""), placeholder="e.g., New Laptop, Vacation Fund") }}
+                        {% for error in form.goal_name.errors %}
+                            <div class="text-danger small mt-2">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="target_amount" class="form-label">Target Amount (R)</label>
+                        <div class="input-group-custom">
+                            <span>R</span>
+                            {{ form.target_amount(class="form-control-custom border-0" + (" is-invalid" if form.target_amount.errors else ""), placeholder="15000.00") }}
+                        </div>
+                        {% for error in form.target_amount.errors %}
+                            <div class="text-danger small mt-2">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="deadline" class="form-label">Target Date (Optional)</label>
+                        {{ form.deadline(class="form-control-custom", type="date") }}
+                        <!-- FIXED: JavaScript to set min date to today -->
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const today = new Date().toISOString().split('T')[0];
+                                document.getElementById('deadline').min = today;
+                            });
+                        </script>
+                        {% for error in form.deadline.errors %}
+                            <div class="text-danger small mt-2">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <button type="submit" class="btn-gradient-success w-100 py-3">
+                        <i class="fas fa-plus-circle me-2"></i> Create Goal
+                    </button>
+                </form>
+                
+                <div class="tips-section">
+                    <h4 class="tips-title">Goal Setting Tips</h4>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="tip-text">Start with small, achievable goals to build momentum</div>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="tip-text">Set realistic deadlines to stay motivated</div>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="tip-text">Track your progress weekly and adjust as needed</div>
+                    </div>
+                    
+                    <div class="tip-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="tip-text">Celebrate milestones along the way to your goal</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column: Your Goals -->
+        <div class="col-lg-8">
+            <div class="goals-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="display-6 fw-bold">Your Financial Goals</h1>
+                        <p class="text-muted mb-0">Track your savings progress and achieve your dreams</p>
+                    </div>
+                    <div class="badge bg-primary px-3 py-2" style="font-size: 1rem;">
+                        <i class="fas fa-bullseye me-2"></i>
+                        {{ goals|length }} goal{% if goals|length != 1 %}s{% endif %}
+                    </div>
+                </div>
+                
+                {% if goals %}
+                <div class="row">
+                    {% for goal in goals %}
+                    <div class="col-12 mb-4">
+                        <div class="goal-card {% if goal.is_completed %}completed{% else %}in-progress{% endif %}">
+                            <div class="goal-header">
+                                <h3 class="goal-title">{{ goal.goal_name }}</h3>
+                                <span class="goal-status {% if not goal.is_completed %}in-progress{% endif %}">
+                                    {% if goal.is_completed %}
+                                        <i class="fas fa-check-circle me-2"></i>Completed
+                                    {% else %}
+                                        <i class="fas fa-clock me-2"></i>In Progress
+                                    {% endif %}
+                                </span>
+                            </div>
+                            
+                            {% if goal.deadline %}
+                            <div class="mb-3">
+                                <i class="fas fa-calendar-alt text-muted me-2"></i>
+                                <span class="text-muted">Target Date: {{ goal.deadline.strftime('%d %B %Y') }}</span>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="progress-container">
+                                <div class="progress-info">
+                                    <div class="progress-percentage">{{ goal.progress_percentage()|round|int }}%</div>
+                                    <div class="text-muted">
+                                        {{ format_currency(goal.current_amount) }} of {{ format_currency(goal.target_amount) }}
+                                    </div>
+                                </div>
+                                <div class="progress-bar-goal">
+                                    <div class="progress-fill" style="width: {{ goal.progress_percentage() }}%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="goal-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Saved</span>
+                                    <span class="stat-value">{{ format_currency(goal.current_amount) }}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Target</span>
+                                    <span class="stat-value">{{ format_currency(goal.target_amount) }}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Remaining</span>
+                                    <span class="stat-value remaining">{{ format_currency(goal.target_amount - goal.current_amount) }}</span>
+                                </div>
+                            </div>
+                            
+                            {% if not goal.is_completed %}
+                            <div class="goal-actions">
+                                <button type="button" class="goal-btn deposit" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#depositModal{{ goal.id }}">
+                                    <i class="fas fa-plus-circle"></i> Add Funds
+                                </button>
+                                
+                                {% if goal.current_amount > 0 %}
+                                <button type="button" class="goal-btn withdraw"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#withdrawModal{{ goal.id }}">
+                                    <i class="fas fa-minus-circle"></i> Withdraw
+                                </button>
+                                {% else %}
+                                <button type="button" class="goal-btn withdraw" disabled>
+                                    <i class="fas fa-minus-circle"></i> Withdraw
+                                </button>
+                                {% endif %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-3">
+                                <div class="badge bg-success px-4 py-2">
+                                    <i class="fas fa-trophy me-2"></i>Goal Achieved! Congratulations!
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Goals Summary -->
+                <div class="goal-stats-summary">
+                    <div class="stats-grid">
+                        <div>
+                            <div class="stat-summary-value">{{ goals|length }}</div>
+                            <div class="stat-summary-label">Total Goals</div>
+                        </div>
+                        <div>
+                            {% set total_saved = goals|sum(attribute='current_amount') %}
+                            <div class="stat-summary-value">{{ format_currency(total_saved) }}</div>
+                            <div class="stat-summary-label">Total Saved</div>
+                        </div>
+                        <div>
+                            {% set completed = goals|selectattr('is_completed')|list|length %}
+                            <div class="stat-summary-value">{{ completed }}</div>
+                            <div class="stat-summary-label">Completed</div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h2 class="empty-title">No Goals Yet</h2>
+                    <p class="empty-description">Start your financial journey by creating your first goal. Track your progress and celebrate achievements along the way!</p>
+                    <button type="button" onclick="document.querySelector('form').scrollIntoView({behavior: 'smooth'})" 
+                            class="btn-gradient-primary px-4">
+                        <i class="fas fa-plus-circle me-2"></i> Create Your First Goal
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+{% for goal in goals %}
+{% if not goal.is_completed %}
+<!-- Deposit Modal -->
+<div class="modal modal-custom fade" id="depositModal{{ goal.id }}" tabindex="-1" aria-labelledby="depositModalLabel{{ goal.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="depositModalLabel{{ goal.id }}">Add to Goal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('user.goal_deposit', goal_id=goal.id) }}">
+                <div class="modal-body">
+                    <h4 class="mb-4">{{ goal.goal_name }}</h4>
+                    
+                    <div class="mb-4">
+                        <label for="amount{{ goal.id }}" class="form-label mb-3">Amount to Add (R)</label>
+                        <div class="input-group-custom mb-3">
+                            <span>R</span>
+                            <input type="number" id="amount{{ goal.id }}" name="amount" class="form-control-custom border-0" 
+                                   step="0.01" min="1" max="{{ current_user.balance }}" 
+                                   placeholder="Enter amount" required>
+                        </div>
+                        <small class="text-muted">
+                            Available Balance: {{ format_currency(current_user.balance) }}
+                        </small>
+                        <div class="mt-3">
+                            <small class="text-muted">Quick Amounts:</small>
+                            <div class="d-flex gap-2 mt-2">
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setAmount(100, 'amount{{ goal.id }}')">R100</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setAmount(500, 'amount{{ goal.id }}')">R500</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setAmount(1000, 'amount{{ goal.id }}')">R1,000</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card p-3 border-info border-2">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-info-circle text-info mt-1 me-3"></i>
+                            <div>
+                                <h6 class="mb-1">How it works:</h6>
+                                <p class="small mb-0">Funds will be transferred from your main balance to this goal. This helps you separate savings from spending money.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-gradient-primary">
+                        <i class="fas fa-plus-circle me-2"></i> Add to Goal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Withdraw Modal -->
+<div class="modal modal-custom fade" id="withdrawModal{{ goal.id }}" tabindex="-1" aria-labelledby="withdrawModalLabel{{ goal.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="withdrawModalLabel{{ goal.id }}">Withdraw from Goal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('user.goal_withdraw', goal_id=goal.id) }}">
+                <div class="modal-body">
+                    <h4 class="mb-4">{{ goal.goal_name }}</h4>
+                    
+                    <div class="mb-4">
+                        <label for="withdrawAmount{{ goal.id }}" class="form-label mb-3">Amount to Withdraw (R)</label>
+                        <div class="input-group-custom mb-3">
+                            <span>R</span>
+                            <input type="number" id="withdrawAmount{{ goal.id }}" name="amount" class="form-control-custom border-0" 
+                                   step="0.01" min="1" max="{{ goal.current_amount }}" 
+                                   placeholder="Enter amount" required>
+                        </div>
+                        <small class="text-muted">
+                            Current in Goal: {{ format_currency(goal.current_amount) }}
+                        </small>
+                        <div class="mt-3">
+                            <small class="text-muted">Quick Amounts:</small>
+                            <div class="d-flex gap-2 mt-2">
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setAmount(100, 'withdrawAmount{{ goal.id }}')">R100</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setAmount(500, 'withdrawAmount{{ goal.id }}')">R500</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="setAmount(1000, 'withdrawAmount{{ goal.id }}')">R1,000</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card p-3 border-warning border-2">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-exclamation-triangle text-warning mt-1 me-3"></i>
+                            <div>
+                                <h6 class="mb-1">Important:</h6>
+                                <p class="small mb-0">Withdrawing funds will move money back to your main balance and may affect your goal progress.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-gradient-primary">
+                        <i class="fas fa-arrow-right me-2"></i> Withdraw
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function setAmount(amount, fieldId) {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.value = amount;
+            field.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    }
+    
+    // Animate progress bars on scroll
+    document.addEventListener('DOMContentLoaded', function() {
+        const progressBars = document.querySelectorAll('.progress-fill');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const progressBar = entry.target;
+                    const width = progressBar.style.width;
+                    progressBar.style.width = '0%';
+                    
+                    setTimeout(() => {
+                        progressBar.style.width = width;
+                    }, 100);
+                    
+                    observer.unobserve(progressBar);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        progressBars.forEach(bar => observer.observe(bar));
+        
+        // Input validation for goal forms
+        const goalForms = document.querySelectorAll('form');
+        goalForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processing...';
+                    submitBtn.disabled = true;
+                }
+            });
+        });
+        
+        // Set min date for goal deadline to today
+        const deadlineField = document.getElementById('deadline');
+        if (deadlineField) {
+            const today = new Date().toISOString().split('T')[0];
+            deadlineField.min = today;
+        }
+    });
+</script>
+{% endblock %}
