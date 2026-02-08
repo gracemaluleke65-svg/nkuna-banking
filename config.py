@@ -40,15 +40,16 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     DEBUG = False
     
-    # CRITICAL FIX: Hardcode database URL since Render env vars aren't loading
-    # Get from environment or use hardcoded fallback
+    # Get database URL from environment or use hardcoded fallback
     database_url = os.environ.get('DATABASE_URL')
     if not database_url:
-        # Fallback to your actual database URL
         database_url = 'postgresql://bakerslovers:ymTgQWC57PTko8iD1Kg1iE9xQKfIyna5@dpg-d5r6faf5r7bs7390vel0-a/bakerslovers'
     
+    # psycopg uses postgresql+psycopg:// format
     if database_url.startswith('postgres://'):
-        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+        database_url = database_url.replace('postgres://', 'postgresql+psycopg://', 1)
+    elif database_url.startswith('postgresql://'):
+        database_url = database_url.replace('postgresql://', 'postgresql+psycopg://', 1)
     
     SQLALCHEMY_DATABASE_URI = database_url
     
