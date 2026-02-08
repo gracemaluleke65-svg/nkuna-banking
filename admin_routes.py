@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from models import db, User, Transaction, FinancialGoal, AdminFeeConfig
 from forms import AdminLoginForm
 from utils import get_system_stats, format_currency, format_datetime
+import os
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -22,32 +23,49 @@ def admin_required(f):
 @admin_bp.route('/login', methods=['GET', 'POST'])
 def login():
     """Admin login"""
+    # If already logged in as admin, go to dashboard
     if current_user.is_authenticated and getattr(current_user, 'is_admin', False):
         return redirect(url_for('admin.dashboard'))
+    
+    # If logged in as regular user, log them out first
+    if current_user.is_authenticated:
+        logout_user()
     
     form = AdminLoginForm()
     
     if form.validate_on_submit():
-        if form.username.data == 'admin' and form.password.data == 'admin123':
-            admin_user = User.query.filter_by(email='admin@nkunabank.co.za').first()
+        # Check against environment variables or default credentials
+        admin_email = os.environ.get('ADMIN_EMAIL', 'admin@nkunabank.co.za')
+        admin_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
+        
+        # Validate credentials
+        if form.username.data == 'admin' and form.password.data == admin_password:
+            # Find or create admin user
+            admin_user = User.query.filter_by(email=admin_email).first()
             
             if not admin_user:
+                # Create admin user if doesn't exist
                 admin_user = User(
                     full_name='System Administrator',
-                    email='admin@nkunabank.co.za',
+                    email=admin_email,
                     id_number='0000000000000',
                     phone='0000000000',
                     account_number='0000000000',
                     is_admin=True,
                     is_active=True
                 )
-                admin_user.set_password('admin123')
+                admin_user.set_password(admin_password)
                 db.session.add(admin_user)
                 db.session.commit()
             
-            login_user(admin_user, remember=True)
-            flash('Admin login successful!', 'success')
-            return redirect(url_for('admin.dashboard'))
+            # Check if password matches
+            if admin_user.check_password(form.password.data):
+                login_user(admin_user, remember=True)
+                flash('Admin login successful!', 'success')
+                next_page = request.args.get('next')
+                return redirect(next_page or url_for('admin.dashboard'))
+            else:
+                flash('Invalid admin credentials.', 'error')
         else:
             flash('Invalid admin credentials.', 'error')
     
